@@ -1,0 +1,32 @@
+<html>
+    <head>
+        <title>
+
+        </title>
+    </head>
+<body>
+<h1>Añadir Producto</h1>
+<form action="addrecord/" method="post">
+    {% csrf_token %}
+    Marca:<br>
+    <input name="marca">
+    <br><br>
+    Nombre:<br>
+    <input name="nombre">
+    <br><br>
+    Modelo:<br>
+    <input name="modelo">
+    <br><br>
+    Unidades:<br>
+    <input name="modelo">
+    <br><br>
+    Precio:<br>
+    <input name="precio">
+    <br><br>
+    Detalles:<br>
+    <textarea name="detalles" rows="10" cols="50">Write something here</textarea>
+    <br><br>
+    <input type="submit" value="Submit">
+</form>
+</body>    
+</html>

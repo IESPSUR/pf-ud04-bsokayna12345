@@ -1,0 +1,23 @@
+<html>
+<head>
+    <title>
+
+    </title>
+</head>
+<body>
+    <h1>Getión de productos</h1>
+<table border="1">
+    {% for x in misProductos %}
+    <tr>
+    <td>{{ x.marca }}</td>
+    <td>{{ x.nombre }}</td>
+    <td>{{ x.modelo }}</td>
+    <td>{{ x.unidades }}</td>
+    <td>{{ x.precio }}</td>
+    <td>{{ x.detalles }}</td>
+    </tr>
+    {% endfor %}
+</table>
+<a href="{% url 'addProducto' %}">Añadir producto</a>
+</body>
+</html>
