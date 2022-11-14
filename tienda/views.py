@@ -28,5 +28,4 @@ def addrecord(request):
   
   member = Producto(marca=ma, nombre=no, modelo=mo, unidades=uni, precio=p, detalles=d)
   member.save()
-  return HttpResponseRedirect(reverse('index'))
-
+  return HttpResponseRedirect(reverse('getionPro'))

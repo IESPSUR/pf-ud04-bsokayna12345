@@ -22,7 +22,3 @@ class Compra(models.Model):
     importe = models.FloatField()
     unidades = models.IntegerField()
     fecha = models.DateField()
-
-
-
-
