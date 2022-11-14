@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from .models import Producto
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
+from django.urls import reverse
 from django.template import loader
 
 # Create your views here.
@@ -26,6 +27,6 @@ def addrecord(request):
   p = request.POST['precio']
   d = request.POST['detalles']
   
-  member = Producto(marca=ma, nombre=no, modelo=mo, unidades=uni, precio=p, detalles=d)
-  member.save()
-  return HttpResponseRedirect(reverse('getionPro'))
+  productos = Producto(marca=ma, nombre=no, modelo=mo, unidades=uni, precio=p, detalles=d)
+  productos.save()
+  return HttpResponseRedirect(reverse('getionProducto'))
