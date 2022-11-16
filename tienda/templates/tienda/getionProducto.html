@@ -6,7 +6,16 @@
 </head>
 <body>
     <h1>Getión de productos</h1>
+
 <table border="1">
+    <tr>
+      <td><strong>Marca</strong></td>
+      <td><strong>Nombre</strong></td>
+      <td><strong>Modelo</strong></td>
+        <td><strong>Unidades</strong></td>
+        <td><strong>Precio</strong></td>
+        <td><strong>Detalles</strong></td>
+    </tr>
     {% for x in misProductos %}
     <tr>
     <td>{{ x.marca }}</td>
