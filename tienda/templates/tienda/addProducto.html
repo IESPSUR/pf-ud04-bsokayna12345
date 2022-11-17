@@ -6,27 +6,15 @@
     </head>
 <body>
 <h1>Añadir Producto</h1>
-<form action="" method="post">
-    {% csrf_token %}
-    Marca:<br>
-    <input name="marca">
-    <br><br>
-    Nombre:<br>
-    <input name="nombre">
-    <br><br>
-    Modelo:<br>
-    <input name="modelo">
-    <br><br>
-    Unidades:<br>
-    <input name="unidades">
-    <br><br>
-    Precio:<br>
-    <input name="precio">
-    <br><br>
-    Detalles:<br>
-    <textarea name="detalles" rows="10" cols="50">Detalles del producto</textarea>
-    <br><br>
-    <input type="submit" value="Submit">
-</form>
+    <form method="POST">
+
+        <!-- Security token -->
+        {% csrf_token %}
+
+        <!-- Using the formset -->
+        {{ form.as_p }}
+
+        <input type="submit" value="Submit">
+    </form>
 </body>    
 </html>
