@@ -52,20 +52,20 @@ class GeeksModel:
     pass
 
 
-def delete_view(request, id):
+def delete_view(request, pk):
     # dictionary for initial data with
     # field names as keys
-    context = {}
+    #context = {}
 
     # fetch the object related to passed id
-    obj = get_object_or_404(GeeksModel, id=id)
+    obj = get_object_or_404(Producto, pk=nombre)
 
     if request.method == "POST":
         # delete object
         obj.delete()
         # after deleting redirect to
         # home page
-        return HttpResponseRedirect("/")
+        return HttpResponseRedirect("gestionProducto")
 
-    return render(request, "delete_view.html", context)
+    return render(request, "tienda/delete_view.html", {'obj' :obj})
 #https://www.geeksforgeeks.org/delete-view-function-based-views-django/?ref=rp
