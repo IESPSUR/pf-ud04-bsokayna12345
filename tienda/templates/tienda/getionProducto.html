@@ -24,6 +24,8 @@
     <td>{{ x.unidades }}</td>
     <td>{{ x.precio }}</td>
     <td>{{ x.detalles }}</td>
+    <td><a href="{%  url 'delete_view' x.nombre %}"> eleminar</a></td>
+    <td> Editar</td>
 
     </tr>
     {% endfor %}

@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 
 from .form import FormularioProducto
 from .models import Producto
@@ -47,25 +47,52 @@ def nuevo(request):
         context['form'] = form
     return render(request, "tienda/addProducto.html", {'form':form})
 
-
-class GeeksModel:
-    pass
-
-
-def delete_view(request, pk):
+def delete_view(request, nombre):
     # dictionary for initial data with
     # field names as keys
     #context = {}
 
     # fetch the object related to passed id
-    obj = get_object_or_404(Producto, pk=nombre)
+    producto = get_object_or_404(Producto, pk=nombre)
 
     if request.method == "POST":
         # delete object
-        obj.delete()
+        producto.delete()
         # after deleting redirect to
         # home page
-        return HttpResponseRedirect("gestionProducto")
-
-    return render(request, "tienda/delete_view.html", {'obj' :obj})
+        #return redirect('gestionProducto')
+    return render(request, "tienda/delete_view.html", {'producto' :producto})
 #https://www.geeksforgeeks.org/delete-view-function-based-views-django/?ref=rp
+def detail_producto(request, nombre):
+    # dictionary for initial data with
+    # field names as keys
+    producto = {}
+
+    # add the dictionary during initialization
+    producto["data"] = Producto.objects.get(pk=nombre)
+
+    return render(request, "detail_producto.html", producto)
+
+
+# update view for details
+def update_producto(request, nombre):
+    # dictionary for initial data with
+    # field names as keys
+    context = {}
+
+    # fetch the object related to passed id
+    producto = get_object_or_404(Producto, id=nombre)
+
+    # pass the object as instance in form
+    form = FormularioProducto(request.POST or None, instance=producto)
+
+    # save the data from the form and
+    # redirect to detail_view
+    if form.is_valid():
+        form.save()
+        return HttpResponseRedirect("/" + nombre)
+
+    # add form dictionary to context
+    context["form"] = form
+
+    return render(request, "update_producto.html", context)
