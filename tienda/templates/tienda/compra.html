@@ -1,0 +1,39 @@
+{% extends 'tienda/base.html' %}
+
+{% block content %}
+<table class="table table-success table-striped">
+  <thead>
+  <h5>Carrito de compra </h5>
+    <tr>
+      <th scope="col">Marca</th>
+      <th scope="col">Nombre</th>
+      <th scope="col">precio</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% if request.session.carrito.items %}
+  {% for key, value in request.session.carrito.items %}
+    <tr>
+      <td>{{ value.marca }}</td>
+      <td>{{ value.nombre }}</td>
+      <td>{{ value.precio }}</td>
+
+    </tr>
+  {% endfor %}
+  {% endif %}
+  <tr>
+    <th>total:</th>
+    <td>$ {{total_carrito}}</td>
+  </tr>
+  </tbody>
+</table>
+<a href="{% url 'limpiar_carrito' %}">limpiar</a><br>
+<a href="#">guardar</a>
+
+{% endblock %}
+    <!-- Display attributes of instance
+
+    <p>{{ data.nombre }}</p>
+    <p>{{ data.marca }}</p>
+    <p>{{ data.precio }}€</P>
+         -->

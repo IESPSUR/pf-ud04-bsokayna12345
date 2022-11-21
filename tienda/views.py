@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 
 from .form import FormularioProducto
+from .Carrito import Carrito
 from .models import Producto
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
@@ -53,7 +54,7 @@ def delete_view(request, nombre):
     #context = {}
 
     # fetch the object related to passed id
-    producto = get_object_or_404(Producto, pk=nombre)
+    producto = get_object_or_404(Producto, pk = nombre)
 
     if request.method == "POST":
         # delete object
@@ -71,7 +72,7 @@ def detail_producto(request, nombre):
     # add the dictionary during initialization
     producto["data"] = Producto.objects.get(pk=nombre)
 
-    return render(request, "detail_producto.html", producto)
+    return render(request, "tienda/detail_producto.html", producto)
 
 
 # update view for details
@@ -81,7 +82,7 @@ def update_producto(request, nombre):
     context = {}
 
     # fetch the object related to passed id
-    producto = get_object_or_404(Producto, id=nombre)
+    producto = get_object_or_404(Producto, pk=nombre)
 
     # pass the object as instance in form
     form = FormularioProducto(request.POST or None, instance=producto)
@@ -90,9 +91,65 @@ def update_producto(request, nombre):
     # redirect to detail_view
     if form.is_valid():
         form.save()
-        return HttpResponseRedirect("/" + nombre)
+        #return HttpResponseRedirect("getionProducto.html")
 
     # add form dictionary to context
     context["form"] = form
 
-    return render(request, "update_producto.html", context)
+    return render(request, "tienda/update_producto.html", context)
+def realizarCompra(request):
+    producto = Producto.objects.all().values()
+    template = loader.get_template('tienda/realizarCompra.html')
+    context = {
+        'misProductos': producto,
+    }
+    return HttpResponse(template.render(context, request))
+"""
+def compra(request, nombre):
+    # dictionary for initial data with
+    # field names as keys
+    producto = {}
+
+    # add the dictionary during initialization
+    producto["data"] = Producto.objects.get(pk=nombre)
+
+    return render(request, "tienda/compra.html", producto)
+
+def compra(request, nombre):
+    # dictionary for initial data with
+    # field names as keys
+    producto = {}
+
+    # add the dictionary during initialization
+    producto["data"] = Producto.objects.get(pk=nombre)
+
+    return render(request, "tienda/compra.html", producto)
+#https://www.youtube.com/watch?v=SlUQYrW6M9k
+
+#------
+
+def tienda (request):
+    productos = Producto.objects.all()
+    return render(request, "tienda/realizarCompra.html", {'productos': productos})
+"""
+def añadir_carrito(request, nombre):
+    carrito = Carrito(request)
+    producto = Producto.objects.get(pk=nombre)
+    carrito.agregar(producto)
+    #return redirect("compra.html")
+    return render(request, "tienda/compra.html")
+def eliminar_producto(request, producto_pk):
+    carrito= Carrito(request)
+    producto = Producto.objects.get(pk=producto_pk)
+    carrito.eliminar(producto)
+    return render(request, "tienda/compra.html")
+def restar(request, producto_pk):
+    carrito= Carrito(request)
+    producto = Producto.objects.get(pk=producto_pk)
+    carrito.restar(producto)
+    return redirect("tienda")
+def limpiar_carrito(request):
+    carrito = Carrito(request)
+    carrito.limpiar()
+    return render(request, "tienda/compra.html")
+#<!-- <td><a href="{% url 'compra' x.nombre %}">Comprar</a></td>-->

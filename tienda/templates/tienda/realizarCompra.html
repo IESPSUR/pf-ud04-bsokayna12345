@@ -1,0 +1,32 @@
+{% extends 'tienda/base.html' %}
+
+{% block content %}
+<table class="table table-success table-striped">
+  <thead>
+    <tr>
+      <th scope="col">Marca</th>
+      <th scope="col">Nombre</th>
+      <th scope="col">Modelo</th>
+      <th scope="col">Unidades</th>
+      <th scope="col">Precio</th>
+      <th scope="col">Detalles</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for x in misProductos %}
+    <tr>
+      <td>{{ x.marca }}</td>
+      <td>{{ x.nombre }}</td>
+      <td>{{ x.modelo }}</td>
+      <td>{{ x.unidades }}</td>
+      <td>{{ x.precio }}</td>
+      <td>{{ x.detalles }}</td>
+      <td><a href="{% url 'añadir_carrito' x.nombre %}">Comprar</a></td>
+
+
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}
