@@ -14,12 +14,12 @@
                 <td>{{ dato.precio }}</td>
                 <td>{{ dato.unidades }}</td>
                 <td><a href="/" class="btn btn-info">Comprar</a></td>
-                <td><a href="/" class="btn btn-warning">Editar</a></td>
-                <td><a href="/" class="btn btn-danger">Elimira</a></td>
+                <td><a href="{% url 'update' dato.id %}" class="btn btn-warning">Editar</a></td>
+                <td><a href="{% url 'delete' dato.id %}" class="btn btn-danger">Elimira</a></td>
 
             </tr>
 
         {% endfor %}
     </table>
-    <a href="/" class="btn btn-success">Añadir</a>
+    <a href="{% url 'addProducto' %}" class="btn btn-success">Añadir</a>
 {% endblock %}

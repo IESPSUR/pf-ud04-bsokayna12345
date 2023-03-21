@@ -1,0 +1,20 @@
+{% extends 'tienda/base.html' %}
+{% block content %}
+    <table class="table">
+        <tr>
+            <th>Nombre</th>
+            <th>Marca</th>
+            <th>Precio</th>
+            <th>Unidades</th>
+        </tr>
+        {% for dato in datos %}
+            <tr>
+                <td>{{ dato.nombre }}</td>
+                <td>{{ dato.marca }}</td>
+                <td>{{ dato.precio }}</td>
+                <td>{{ dato.unidades }}</td>
+                <td><a href="" class="btn btn-info">Comprar</a></td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock %}
