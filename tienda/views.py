@@ -1,7 +1,10 @@
-from django.shortcuts import render, get_object_or_404
+from time import timezone
 
-from tienda.forms import FormProducto
-from tienda.models import Producto
+from django.db import transaction
+from django.shortcuts import render, get_object_or_404, redirect
+
+from tienda.forms import FormProducto, FormCompra
+from tienda.models import Producto, Compra
 
 
 # Create your views here.
@@ -45,3 +48,6 @@ def Compra_producto(request):
     producto = Producto.objects.all()
     context["datos"] =producto
     return render(request, 'tienda/comprar.html', context)
+
+
+
