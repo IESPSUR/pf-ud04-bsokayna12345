@@ -11,7 +11,5 @@ class FormProducto(ModelForm):
         fields = '__all__'
 
 
-class FormCompra(ModelForm):
-    class Meta:
-        model = Compra
-        unidades = forms.IntegerField(validators=[MinValueValidator(0)])
+
+

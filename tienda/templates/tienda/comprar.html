@@ -1,20 +1,28 @@
 {% extends 'tienda/base.html' %}
+
 {% block content %}
-    <table class="table">
-        <tr>
-            <th>Nombre</th>
-            <th>Marca</th>
-            <th>Precio</th>
-            <th>Unidades</th>
-        </tr>
-        {% for dato in datos %}
-            <tr>
-                <td>{{ dato.nombre }}</td>
-                <td>{{ dato.marca }}</td>
-                <td>{{ dato.precio }}</td>
-                <td>{{ dato.unidades }}</td>
-                <td><a href="{% url 'checkout' dato.id %}" class="btn btn-info">Comprar</a></td>
-            </tr>
-        {% endfor %}
-    </table>
+  <h1>Buscar Productos</h1>
+
+  <form method="get">
+    <label for="prd">Buscar:</label>
+    <input type="text" name="prd" id="prd" required>
+    <button type="submit">Buscar</button>
+  </form>
+
+  {% if datos %}
+    <ul>
+    {% for producto in datos %}
+      <li>
+        <h2>{{ producto.nombre }}</h2>
+        <p>Marca: {{ producto.marca.nombre }}</p>
+        <p>Unidades: {{ producto.unidades }}</p>
+        <p>Precio: {{ producto.precio }}</p>
+        <a href="{% url 'comprar_producto' producto.id %}">Comprar</a>
+      </li>
+    {% endfor %}
+    </ul>
+  {% else %}
+    <p>No se encontraron resultados.</p>
+  {% endif %}
+
 {% endblock %}
