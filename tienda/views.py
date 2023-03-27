@@ -22,6 +22,7 @@ def listProducto(request):
     context["datos"] = productos
     return render(request, "tienda/admin/listProducto.html", context)
 
+
 @user_passes_test(lambda u: u.is_superuser)
 def add_producto(request):
     context = {}
@@ -31,12 +32,14 @@ def add_producto(request):
     context["form"] = formulario
     return render(request, "tienda/admin/add_producto.html", context)
 
+
 @user_passes_test(lambda u: u.is_superuser)
 def delet_producto(request, id):
     producto = get_object_or_404(Producto, id=id)
     if request.method == "POST":
         producto.delete()
     return render(request, 'tienda/admin/delete.html', {"productos": producto})
+
 
 @user_passes_test(lambda u: u.is_superuser)
 def update_producto(request, id):
@@ -64,17 +67,18 @@ def buscar(request):
     # x = "articulo x es :%r " % request.GET["prd"]
     # y = "articulo y es :%r" % request.GET["prd2"]
     context = {}
-    context['datos'] = Producto.objects.all()
+    mensaje = "No existe este producto"
     if request.GET["prd"]:
         nombre_producto = request.GET["prd"]
         producto_encotrado = Producto.objects.filter(nombre__icontains=nombre_producto)
         if producto_encotrado:
             context['datos'] = producto_encotrado
         else:
-            return redirect('compra')
+            context = {"dato": mensaje}
     else:
-        context['datos']
+        context['datos'] = Producto.objects.all()
     return render(request, "tienda/compra_producto_buscado.html", context)
+
 
 @transaction.atomic()
 def ckeckout(request, id):
@@ -113,16 +117,20 @@ def top_10_productos_vendidos(request):
     top_productos = Producto.objects.filter(id__in=ids_productos_vendidos)
     context = {'top_productos': top_productos}
     return render(request, 'tienda/productoMasVendido.html', context)
+
+
 def compras_usuario(request, id):
     compras = Compra.objects.filter(user_id=id)
     context = {'compras': compras}
     return render(request, 'tienda/compras_usuario.html', context)
+
+
 @login_required
 def top_ten_clientes(request):
     top_clientes = Compra.objects.values('user__username') \
-                                 .annotate(importe_total=Sum('importe')) \
-                                 .order_by('-importe_total') \
-                                 .values('user__username', 'importe_total')[:10]
+                       .annotate(importe_total=Sum('importe')) \
+                       .order_by('-importe_total') \
+                       .values('user__username', 'importe_total')[:10]
 
     context = {'top_clientes': top_clientes}
     return render(request, 'tienda/top_ten_clientes.html', context)
