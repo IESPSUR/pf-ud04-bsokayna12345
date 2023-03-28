@@ -14,5 +14,7 @@
     <input type="number" id="unidades" name="unidades" value="1" min="1" max="{{ producto.unidades }}">
     <br><br>
     <input type="submit" value="Comprar">
+  <td><a href="{% url 'compra' %}" class="btn btn-info">volver</a></td>
   </form>
+
 {% endblock %}

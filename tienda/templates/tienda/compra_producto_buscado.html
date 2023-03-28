@@ -5,7 +5,7 @@
 
  <form method="GET" action="/tienda/buscar/">
     <label for="">Buscar:</label>
-    <input type="text" name="prd" >
+    <input type="text" name="prd" value="{{ request.GET.prd }}">
     <button type="submit">Buscar</button>
   </form>
     {% if datos %}
@@ -22,7 +22,8 @@
                 <td>{{ producto.marca }}</td>
                 <td>{{ producto.precio }}</td>
                 <td>{{ producto.unidades }}</td>
-                <td><a href="/" class="btn btn-info">Comprar</a></td>
+            <td><a href="{% url 'checkout' producto.id %}" class="btn btn-info">Comprar</a></td>
+
             </tr>
         {% endfor %}
     </table>

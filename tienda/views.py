@@ -53,7 +53,7 @@ def update_producto(request, id):
 
 
 def detalle_producto(request, id):
-    producto = get_object_or_404(Producto, id=id)
+    producto = get_object_or_404(Compra, id=id)
     return render(request, 'tienda/detalle_producto.html', {'producto': producto})
 
 
@@ -134,3 +134,32 @@ def top_ten_clientes(request):
 
     context = {'top_clientes': top_clientes}
     return render(request, 'tienda/top_ten_clientes.html', context)
+
+
+from django.shortcuts import render
+from .models import Producto, Marca
+
+
+def filtrar_productos(request):
+    marcas = Marca.objects.all()
+    productos = Producto.objects.all()
+
+    marca_id = request.GET.get("marca")
+    nombre = request.GET.get('nombre', None)
+    print(marca_id)
+    print(nombre)
+
+    if marca_id:
+        productos = productos.filter(marca__id=marca_id)
+
+    if nombre:
+        productos = productos.filter(nombre__icontains=nombre)
+
+    context = {
+        'marcas': marcas,
+        'productos': productos,
+        'marca_id': marca_id,
+        'nombre': nombre,
+    }
+
+    return render(request, 'tienda/filtrar_productos.html', context)

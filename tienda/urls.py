@@ -19,4 +19,5 @@ urlpatterns = [
     path('tienda/informes/productoMasVendido/', views.top_10_productos_vendidos, name='productoMasVendido'),
     path('tienda/informes/compras_usuario/<int:id>/', views.compras_usuario, name='compras_usuario'),
     path('tienda/informes/clente/', views.top_ten_clientes, name='cliente'),
+    path('filtrar_productos/', views.filtrar_productos, name='filtrarProducto'),
 ]
