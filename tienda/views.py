@@ -81,19 +81,25 @@ def buscar(request):
 
 
 @transaction.atomic()
-def ckeckout(request, id):
+def checkout(request, id):
     producto = get_object_or_404(Producto, id=id)
+    mensaje_error = ''
+    mensaje_confirmacion = ''
+
     if request.method == 'POST':
-        unidades = int(request.POST.get('unidades', 0))
-        try:
-            producto.compra(unidades=unidades, user=request.user)
-        except ValueError as e:
-            error_message = str(e)
+        unidades = int(request.POST['unidades'])
+        if unidades > producto.unidades:
+            mensaje_error = "No hay suficientes unidades disponibles para la compra"
         else:
-            return redirect('detalle_producto', id=producto.id)
-    else:
-        error_message = None
-    return render(request, 'tienda/comprar_producto.html', {'producto': producto, 'error_message': error_message})
+            importe = unidades * producto.precio
+            compra = Compra(nombre=producto, unidades=unidades, importe=importe, user=request.user)
+            compra.save()
+            producto.unidades -= unidades
+            producto.save()
+            mensaje_confirmacion = "Compra realizada con éxito"
+
+    return render(request, 'tienda/comprar_producto.html',
+                  {'producto': producto, 'mensaje_error': mensaje_error, 'mensaje_confirmacion': mensaje_confirmacion})
 
 
 def informes(request):

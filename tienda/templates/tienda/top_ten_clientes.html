@@ -4,11 +4,19 @@
 <h1>Top Ten Mejores Clientes</h1>
 
 {% if top_clientes %}
-  <ol>
+    <table class="table">
+    <tr>
+        <th>usuario</th>
+        <th>Importe</th>
+    </tr>
     {% for cliente in top_clientes %}
-      <li>{{ cliente.user__username }} - {{ cliente.importe_total }}€</li>
+        <tr>
+            <td>{{ cliente.user__username }}</td>
+            <td>{{ cliente.importe_total }}€</td>
+        </tr>
     {% endfor %}
-  </ol>
+    </table>
+
 {% else %}
   <p>No hay datos.</p>
 {% endif %}
