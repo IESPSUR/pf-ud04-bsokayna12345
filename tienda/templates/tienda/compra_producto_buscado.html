@@ -5,7 +5,7 @@
 
  <form method="GET" action="/tienda/buscar/">
     <label for="">Buscar:</label>
-    <input type="text" name="prd" >
+    <input type="text" name="prd" value="{{ request.GET.prd }} ">
     <button type="submit">Buscar</button>
   </form>
     {% if datos %}
@@ -29,5 +29,5 @@
     {% else %}
         {{ dato }}
     {% endif %}
-
+<!-- sokayna -->
 {% endblock %}
