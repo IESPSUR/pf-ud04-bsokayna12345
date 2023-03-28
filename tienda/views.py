@@ -1,5 +1,7 @@
 from sqlite3 import IntegrityError
 from time import timezone
+
+from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.decorators import login_required
 from django.contrib.postgres.search import SearchVector, SearchQuery
@@ -22,8 +24,7 @@ def listProducto(request):
     context["datos"] = productos
     return render(request, "tienda/admin/listProducto.html", context)
 
-
-@user_passes_test(lambda u: u.is_superuser)
+@staff_member_required
 def add_producto(request):
     context = {}
     formulario = FormProducto(request.POST or None)
@@ -33,7 +34,7 @@ def add_producto(request):
     return render(request, "tienda/admin/add_producto.html", context)
 
 
-@user_passes_test(lambda u: u.is_superuser)
+@staff_member_required
 def delet_producto(request, id):
     producto = get_object_or_404(Producto, id=id)
     if request.method == "POST":
@@ -41,7 +42,7 @@ def delet_producto(request, id):
     return render(request, 'tienda/admin/delete.html', {"productos": producto})
 
 
-@user_passes_test(lambda u: u.is_superuser)
+@staff_member_required
 def update_producto(request, id):
     context = {}
     producto = get_object_or_404(Producto, id=id)
@@ -97,7 +98,6 @@ def checkout(request, id):
             producto.unidades -= unidades
             producto.save()
             mensaje_confirmacion = "Compra realizada con éxito"
-
     return render(request, 'tienda/comprar_producto.html',
                   {'producto': producto, 'mensaje_error': mensaje_error, 'mensaje_confirmacion': mensaje_confirmacion})
 
@@ -117,11 +117,14 @@ def producto_marca(requets, id):
 
 
 def top_10_productos_vendidos(request):
+
     productos_vendidos = Compra.objects.values('nombre').annotate(total_unidades_vendidas=Sum('unidades')).order_by(
         '-total_unidades_vendidas')[:1]
     ids_productos_vendidos = [producto_vendido['nombre'] for producto_vendido in productos_vendidos]
     top_productos = Producto.objects.filter(id__in=ids_productos_vendidos)
-    context = {'top_productos': top_productos}
+    context = {'top_productos': top_productos, 'productos_vendidos': productos_vendidos}
+    print(productos_vendidos)
+    print(top_productos)
     return render(request, 'tienda/productoMasVendido.html', context)
 
 

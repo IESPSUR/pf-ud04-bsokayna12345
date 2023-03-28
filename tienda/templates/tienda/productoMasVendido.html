@@ -11,7 +11,9 @@
         <tr>
           <td>{{ forloop.counter }}</td>
           <td>{{ producto.nombre }}</td>
-          <td>{{ total_unidades_vendidas }}</td>
+            {% for producto_vendido in productos_vendidos  %}
+             <td>{{producto_vendido.total_unidades_vendidas }}</td>
+            {% endfor %}
         </tr>
       {% endfor %}
   </table>

@@ -6,19 +6,19 @@
 <p>Precio: {{ producto.precio }}</p>
 <p>Detalles: {{ producto.detalles }}</p>
 
-{% if mensaje_error %}
-    <div class="alert alert-danger">{{ mensaje_error }}</div>
-{% endif %}
+
 
 <form method="post">
- {% csrf_token %}
- <label for="unidades">Unidades:</label>
- <input type="number" name="unidades" min="1" max="{{ producto.unidades }}">
- <button type="submit">Comprar</button>
-<a href="{% url 'compra' %}" class="btn btn-warning">volver</a>
+     {% csrf_token %}
+     <label for="unidades">Unidades:</label>
+     <input type="number" name="unidades" min="1">
+     <button type="submit">Comprar</button>
+    <a href="{% url 'compra' %}" class="btn btn-warning">volver</a>
 </form>
-{% if mensaje_confirmacion %}
-    <div class="alert alert-success">{{ mensaje_confirmacion }}</div>
-{% endif %}
-
+    {% if mensaje_error %}
+    <div class="alert alert-danger">{{ mensaje_error }}</div>
+    {% endif %}
+    {% if mensaje_confirmacion %}
+        <div class="alert alert-success">{{ mensaje_confirmacion }}</div>
+    {% endif %}
 {% endblock %}
