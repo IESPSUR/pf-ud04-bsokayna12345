@@ -11,5 +11,15 @@ class FormProducto(ModelForm):
         fields = '__all__'
 
 
+class FormCompra(ModelForm):
+    nombre = forms.CharField(required=False)
+
+    class Meta:
+        model = Producto
+        fields = ['nombre']
 
 
+class FormCheckout(ModelForm):
+    class Meta:
+        model = Producto
+        fields = ['unidades']

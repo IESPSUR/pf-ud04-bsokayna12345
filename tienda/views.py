@@ -1,13 +1,7 @@
-from sqlite3 import IntegrityError
-from time import timezone
 from django.contrib.auth.decorators import user_passes_test
-from django.contrib.auth.decorators import login_required
-from django.contrib.postgres.search import SearchVector, SearchQuery
-from django.db import transaction
-from django.db.models import Sum
+from django.contrib import messages
 from django.shortcuts import render, get_object_or_404, redirect
-
-from tienda.forms import FormProducto
+from tienda.forms import FormProducto, FormCompra, FormCheckout
 from tienda.models import Producto, Compra, Marca
 
 
@@ -20,7 +14,7 @@ def listProducto(request):
     context = {}
     productos = Producto.objects.all()
     context["datos"] = productos
-    return render(request, "tienda/admin/listProducto.html", context)
+    return render(request, "tienda/listProducto.html", context)
 
 
 @user_passes_test(lambda u: u.is_superuser)
@@ -30,7 +24,7 @@ def add_producto(request):
     if formulario.is_valid():
         formulario.save()
     context["form"] = formulario
-    return render(request, "tienda/admin/add_producto.html", context)
+    return render(request, "tienda/add_producto.html", context)
 
 
 @user_passes_test(lambda u: u.is_superuser)
@@ -38,7 +32,7 @@ def delet_producto(request, id):
     producto = get_object_or_404(Producto, id=id)
     if request.method == "POST":
         producto.delete()
-    return render(request, 'tienda/admin/delete.html', {"productos": producto})
+    return render(request, 'tienda/delete.html', {"productos": producto})
 
 
 @user_passes_test(lambda u: u.is_superuser)
@@ -49,90 +43,91 @@ def update_producto(request, id):
     if formulario.is_valid():
         formulario.save()
     context["form"] = formulario
-    return render(request, "tienda/admin/update_producto.html", context)
+    return render(request, "tienda/update_producto.html", context)
+
+
+def compra(request):
+    context = {}
+    if request.method == 'GET':
+        form = FormCompra(request.GET)
+        if form.is_valid():
+            nombre_producto = form.cleaned_data['nombre']
+            productos = Producto.objects.filter(nombre__icontains=nombre_producto)
+            if productos:
+                context['productos'] = productos
+    else:
+        form = FormCompra()
+    context['form'] = form
+    return render(request, "tienda/compra_producto_buscado.html", context)
 
 
 def detalle_producto(request, id):
     producto = get_object_or_404(Producto, id=id)
-    return render(request, 'tienda/detalle_producto.html', {'producto': producto})
+    form = FormCompra(request.method)
+    context = {'producto': producto, 'form': form}
+    return render(request, 'tienda/detalle_producto.html', context)
 
 
-def compra(request):
-    productos = Producto.objects.all()
-    context = {'productos': productos}
-    return render(request, 'tienda/compra.html', context)
-
-
-def buscar(request):
-    # x = "articulo x es :%r " % request.GET["prd"]
-    # y = "articulo y es :%r" % request.GET["prd2"]
-    context = {}
-    mensaje = "No existe este producto"
-    if request.GET["prd"]:
-        nombre_producto = request.GET["prd"]
-        producto_encotrado = Producto.objects.filter(nombre__icontains=nombre_producto)
-        if producto_encotrado:
-            context['datos'] = producto_encotrado
-        else:
-            context = {"dato": mensaje}
-    else:
-        context['datos'] = Producto.objects.all()
-    return render(request, "tienda/compra_producto_buscado.html", context)
-
-
-@transaction.atomic()
 def checkout(request, id):
+    form = FormCheckout()
+    precio_total = 0
     producto = get_object_or_404(Producto, id=id)
+    if request.method == 'GET':
+        unidades = int(request.GET['unidades'])
+        print(unidades)
+        precio_total = producto.precio * unidades
+        form = FormCheckout({'unidades': unidades})
 
     if request.method == 'POST':
-        unidades = int(request.POST['unidades'])
-        if unidades > producto.unidades:
-            mensaje_error = "No hay suficientes unidades disponibles para la compra"
-        else:
-            importe = unidades * producto.precio
-            compra = Compra(nombre=producto, unidades=unidades, importe=importe, user=request.user)
-            compra.save()
-            producto.unidades -= unidades
-            producto.save()
-            mensaje_confirmacion = "Compra realizada con éxito"
+        form = FormCheckout(request.POST)
+        if form.is_valid():
+            unidades = form.cleaned_data['unidades']
+            if unidades <= producto.unidades:
+                importe = unidades * producto.precio
+                compra = Compra(nombre=producto, unidades=unidades, importe=importe, user=request.user)
+                compra.save()
+                producto.unidades -= unidades
+                producto.save()
 
-    return render(request, 'tienda/comprar_producto.html', {'producto': producto})
-
-def informes(request):
-    return render(request, 'tienda/informes.html', {})
-
-
-def marcas(request):
-    marcas = Marca.objects.all()
-    return render(request, 'tienda/informe_marca.html', {'marcas': marcas})
+            else:
+                messages.error(request, "No existen unidades suficiente")
+            return redirect('compra')
+    context = {'form': form, 'total': precio_total, 'productos': producto , 'unidades':unidades}
+    return render(request, 'tienda/checkout.html', context)
 
 
-def producto_marca(requets, id):
-    productos = Producto.objects.filter(marca_id=id)
-    return render(requets, 'tienda/producto_marca.html', {'productos': productos})
+"""
+///
+    if request.method == 'POST':
+        form = FormCheckout(request.POST)
+        if form.is_valid():
+            unidades = form.cleaned_data['unidades']
+            if unidades <= producto.unidades:
+                importe = unidades * producto.precio
+                compra = Compra(nombre=producto, unidades=unidades, importe=importe, user=request.user)
+                compra.save()
+                producto.unidades -= unidades
+                producto.save()
 
-
-def top_10_productos_vendidos(request):
-    productos_vendidos = Compra.objects.values('nombre').annotate(total_unidades_vendidas=Sum('unidades')).order_by(
-        '-total_unidades_vendidas')[:1]
-    ids_productos_vendidos = [producto_vendido['nombre'] for producto_vendido in productos_vendidos]
-    top_productos = Producto.objects.filter(id__in=ids_productos_vendidos)
-    context = {'top_productos': top_productos}
-    return render(request, 'tienda/productoMasVendido.html', context)
-
-
-def compras_usuario(request, id):
-    compras = Compra.objects.filter(user_id=id)
-    context = {'compras': compras}
-    return render(request, 'tienda/compras_usuario.html', context)
-
-
-@login_required
-def top_ten_clientes(request):
-    top_clientes = Compra.objects.values('user__username') \
-                       .annotate(importe_total=Sum('importe')) \
-                       .order_by('-importe_total') \
-                       .values('user__username', 'importe_total')[:10]
-
-    context = {'top_clientes': top_clientes}
-    return render(request, 'tienda/top_ten_clientes.html', context)
+            else:
+                messages.error(request, "No existen unidades suficiente")
+            return redirect('compra')
+///
+def comprar_producto(request, id):
+    producto = get_object_or_404(Producto, id=id)
+    if request.method == 'POST':
+        form = FormCompra(request.POST)
+        if form.is_valid():
+            unidades = form.cleaned_data['unidades']
+            if unidades > producto.stock:
+                messages.error(request, f"No hay suficientes unidades en stock. Stock actual: {producto.stock}")
+            else:
+                # Registrar la compra
+                producto.compra(unidades=unidades, user=request.user)
+                messages.success(request, f"Compra realizada exitosamente")
+                return redirect('detalle_producto', id=id)
+    else:
+        form = FormCompra()
+    context = {'producto': producto, 'form': form}
+    return render(request, 'tienda/comprar_producto.html', context)
+"""

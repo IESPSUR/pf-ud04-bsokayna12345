@@ -1,33 +1,32 @@
 {% extends 'tienda/base.html' %}
-
 {% block content %}
-  <h1>Buscar Productos</h1>
-
- <form method="GET" action="/tienda/buscar/">
-    <label for="">Buscar:</label>
-    <input type="text" name="prd" value="{{ request.GET.prd }} ">
-    <button type="submit">Buscar</button>
-  </form>
-    {% if datos %}
-         <table class="table">
-        <tr>
-            <th>Nombre</th>
+    <form method="get">
+    {{ form.as_p}}
+    <button type="submit">buscar</button>
+    </form>
+    {% if productos %}
+    <table class="table">
+        <th>Nombre</th>
             <th>Marca</th>
             <th>Precio</th>
             <th>Unidades</th>
-        </tr>
-        {% for producto in datos %}
-            <tr>
-                <td>{{ producto.nombre }}</td>
-                <td>{{ producto.marca }}</td>
-                <td>{{ producto.precio }}</td>
-                <td>{{ producto.unidades }}</td>
-                <td><a href="/" class="btn btn-info">Comprar</a></td>
-            </tr>
+        {% for producto in productos %}
+          <tr>
+            <td>{{ producto.nombre }}</td>
+            <td>{{ producto.marca }}</td>
+            <td>{{ producto.precio }}</td>
+            <td>{{ producto.unidades }}</td>
+          <!-- <td> <a href="{% url 'checkout' producto.id  %}" class="btn btn-info"> Comprar </a> </td>-->
+          <td>
+              <form method="get" action="{% url 'checkout' producto.id %}">
+                    <input type="number" name="unidades" value="1" min="1">
+                    <button type="submit" class="btn btn-info">comprar</button>
+              </form>
+          </td>
+          </tr>
         {% endfor %}
     </table>
     {% else %}
-        {{ dato }}
+        <div>no existe este producto</div>
     {% endif %}
-<!-- sokayna -->
 {% endblock %}

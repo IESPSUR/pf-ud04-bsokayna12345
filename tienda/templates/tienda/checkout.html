@@ -1,0 +1,16 @@
+{% extends 'tienda/base.html' %}
+{% block content %}
+    <p> Nombre: {{ productos.nombre }}</p>
+    <p> Marca : {{ productos.marca }}</p>
+    <p>Unidades : {{ unidades }}</p>
+    <p> Importe : {{ total }}€</p>
+    <form method="post">
+    {% csrf_token %}
+        {{ form.as_p }}
+    <button type="submit">comprar</button>
+    </form>
+
+
+
+
+{% endblock %}

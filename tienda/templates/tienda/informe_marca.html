@@ -1,7 +1,0 @@
-{% extends 'tienda/base.html' %}
-{% block content %}
-    {% for marca in marcas %}
-       <p><a href="{% url 'producto_marcas' marca.id %}">{{ marca.nombre }}</a></p><br>
-    {% endfor %}
-
-{% endblock %}
