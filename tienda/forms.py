@@ -20,6 +20,7 @@ class FormCompra(ModelForm):
 
 
 class FormCheckout(ModelForm):
+    unidades = forms.IntegerField(widget=forms.NumberInput(attrs={'readonly': 'readonly'}))
     class Meta:
         model = Producto
         fields = ['unidades']

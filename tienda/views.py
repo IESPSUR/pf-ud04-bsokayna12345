@@ -1,5 +1,6 @@
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib import messages
+from django.db import transaction
 from django.shortcuts import render, get_object_or_404, redirect
 from tienda.forms import FormProducto, FormCompra, FormCheckout
 from tienda.models import Producto, Compra, Marca
@@ -61,73 +62,37 @@ def compra(request):
     return render(request, "tienda/compra_producto_buscado.html", context)
 
 
-def detalle_producto(request, id):
-    producto = get_object_or_404(Producto, id=id)
-    form = FormCompra(request.method)
-    context = {'producto': producto, 'form': form}
-    return render(request, 'tienda/detalle_producto.html', context)
-
-
+@transaction.atomic()
 def checkout(request, id):
-    form = FormCheckout()
+    producto = get_object_or_404(Producto, id=id)
     precio_total = 0
-    producto = get_object_or_404(Producto, id=id)
+    unidades = 0
     if request.method == 'GET':
-        unidades = int(request.GET['unidades'])
-        print(unidades)
+        unidades = int(request.GET.get('unidades'))
         precio_total = producto.precio * unidades
+        print(precio_total)
         form = FormCheckout({'unidades': unidades})
+        if unidades > producto.unidades:
+            messages.error(request, "No existen unidades suficientes")
 
-    if request.method == 'POST':
+    elif request.method == 'POST':
         form = FormCheckout(request.POST)
         if form.is_valid():
             unidades = form.cleaned_data['unidades']
+            print(unidades)
             if unidades <= producto.unidades:
                 importe = unidades * producto.precio
                 compra = Compra(nombre=producto, unidades=unidades, importe=importe, user=request.user)
                 compra.save()
                 producto.unidades -= unidades
                 producto.save()
-
+                messages.success(request, "compra realizada en exito")
+                return redirect('compra')
             else:
-                messages.error(request, "No existen unidades suficiente")
-            return redirect('compra')
-    context = {'form': form, 'total': precio_total, 'productos': producto , 'unidades':unidades}
-    return render(request, 'tienda/checkout.html', context)
-
-
-"""
-///
-    if request.method == 'POST':
-        form = FormCheckout(request.POST)
-        if form.is_valid():
-            unidades = form.cleaned_data['unidades']
-            if unidades <= producto.unidades:
-                importe = unidades * producto.precio
-                compra = Compra(nombre=producto, unidades=unidades, importe=importe, user=request.user)
-                compra.save()
-                producto.unidades -= unidades
-                producto.save()
-
-            else:
-                messages.error(request, "No existen unidades suficiente")
-            return redirect('compra')
-///
-def comprar_producto(request, id):
-    producto = get_object_or_404(Producto, id=id)
-    if request.method == 'POST':
-        form = FormCompra(request.POST)
-        if form.is_valid():
-            unidades = form.cleaned_data['unidades']
-            if unidades > producto.stock:
-                messages.error(request, f"No hay suficientes unidades en stock. Stock actual: {producto.stock}")
-            else:
-                # Registrar la compra
-                producto.compra(unidades=unidades, user=request.user)
-                messages.success(request, f"Compra realizada exitosamente")
-                return redirect('detalle_producto', id=id)
+                messages.error(request, "No existen unidades suficientes")
+                return redirect('compra')
     else:
-        form = FormCompra()
-    context = {'producto': producto, 'form': form}
-    return render(request, 'tienda/comprar_producto.html', context)
-"""
+        form = FormCheckout()
+
+    context = {'form': form, 'producto': producto, 'precio_total': precio_total, 'unidades': unidades}
+    return render(request, 'tienda/checkout.html', context)
