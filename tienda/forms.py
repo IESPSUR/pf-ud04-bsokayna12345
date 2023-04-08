@@ -1,8 +1,10 @@
+import itertools
+
 from django.core.validators import MinValueValidator
 from django.forms import ModelForm
 from django import forms
 
-from tienda.models import Producto, Compra
+from tienda.models import Producto, Compra, Marca
 
 
 class FormProducto(ModelForm):
@@ -24,3 +26,7 @@ class FormCheckout(ModelForm):
     class Meta:
         model = Producto
         fields = ['unidades']
+class FormMarca(forms.Form):
+    choices = Marca.objects.all().values_list('nombre', 'nombre')
+    empty = [('','-------')]
+    marca = forms.ChoiceField(required=False, choices=itertools.chain(empty,choices.iterator()))

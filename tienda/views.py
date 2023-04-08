@@ -2,7 +2,7 @@ from django.contrib.auth.decorators import user_passes_test
 from django.contrib import messages
 from django.db import transaction
 from django.shortcuts import render, get_object_or_404, redirect
-from tienda.forms import FormProducto, FormCompra, FormCheckout
+from tienda.forms import FormProducto, FormCompra, FormCheckout, FormMarca
 from tienda.models import Producto, Compra, Marca
 
 
@@ -96,3 +96,20 @@ def checkout(request, id):
 
     context = {'form': form, 'producto': producto, 'precio_total': precio_total, 'unidades': unidades}
     return render(request, 'tienda/checkout.html', context)
+
+
+def marca(request):
+    productos = Producto.objects.all()
+    if request.method == 'POST':
+        form = FormMarca(request.POST)
+        if form.is_valid():
+            marca_seleccionada = form.cleaned_data['marca']
+            print(marca_seleccionada)
+            # hacer algo con la marca seleccionada
+            productos = Producto.objects.filter(marca__nombre__icontains=marca_seleccionada)
+            print(productos)
+
+    else:
+        form = FormMarca()
+    context = {'form': form,'productos':productos}
+    return render(request, 'tienda/marca.html', context)
