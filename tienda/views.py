@@ -1,6 +1,8 @@
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib import messages
 from django.db import transaction
+from django.db.models import Sum
+from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from tienda.forms import FormProducto, FormCompra, FormCheckout, FormMarca
 from tienda.models import Producto, Compra, Marca
@@ -105,11 +107,29 @@ def marca(request):
         if form.is_valid():
             marca_seleccionada = form.cleaned_data['marca']
             print(marca_seleccionada)
-            # hacer algo con la marca seleccionada
             productos = Producto.objects.filter(marca__nombre__icontains=marca_seleccionada)
             print(productos)
-
     else:
         form = FormMarca()
-    context = {'form': form,'productos':productos}
+    context = {'form': form, 'productos': productos}
+    return render(request, 'tienda/marca.html', context)
+
+
+def top_10_productos_vendidos(request):
+    context={}
+    if request.method == 'GET':
+        productos_vendidos = Compra.objects.values('nombre').annotate(total_unidades_vendidas=Sum('unidades')).order_by(
+            '-total_unidades_vendidas')[:10]
+
+        if productos_vendidos:
+            ids_productos_vendidos = [producto_vendido['nombre'] for producto_vendido in productos_vendidos]
+            top_productos = Producto.objects.filter(id__in=ids_productos_vendidos)
+            context = {'top_productos': top_productos, 'productos_vendidos': productos_vendidos}
+            print(ids_productos_vendidos)
+            print(top_productos)
+            print(productos_vendidos.values('total_unidades_vendidas'))
+    return render(request, 'tienda/marca.html', context)
+def compras_usuario(request, id):
+    compras = Compra.objects.filter(user_id=id)
+    context = {'compras': compras}
     return render(request, 'tienda/marca.html', context)
