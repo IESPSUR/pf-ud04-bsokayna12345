@@ -42,3 +42,4 @@ class FormCompraUser(forms.Form):
 class FormFilterProductoMarca(forms.Form):
     nombre = forms.CharField(required=False)
     marca = forms.ModelChoiceField(queryset=Marca.objects.all(), empty_label='Selecciona una marca', required=False)
+

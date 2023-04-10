@@ -1,0 +1,461 @@
+[
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "pbkdf2_sha256$390000$H8gfvx0VtN9SGASgfOA3FT$wgy4+6IwbRZPTl4S3xo6G+CcqxWt9+kSk9729LKkfLQ=",
+    "last_login": "2023-04-10T07:46:33.308Z",
+    "is_superuser": true,
+    "username": "admin",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2023-03-27T07:34:25.817Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "pbkdf2_sha256$390000$531zejklWjpibipRM1viqF$3Bx0IpxDWOIPRQHIm7pbBLj+ovjmlaT++oGymGccesc=",
+    "last_login": "2023-03-28T08:17:38Z",
+    "is_superuser": false,
+    "username": "rabha",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2023-03-28T08:14:50Z",
+    "groups": [],
+    "user_permissions": [
+      [
+        "add_marca",
+        "tienda",
+        "marca"
+      ],
+      [
+        "change_marca",
+        "tienda",
+        "marca"
+      ],
+      [
+        "delete_marca",
+        "tienda",
+        "marca"
+      ],
+      [
+        "add_producto",
+        "tienda",
+        "producto"
+      ],
+      [
+        "change_producto",
+        "tienda",
+        "producto"
+      ],
+      [
+        "delete_producto",
+        "tienda",
+        "producto"
+      ],
+      [
+        "view_producto",
+        "tienda",
+        "producto"
+      ]
+    ]
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "oza1qf5o10rcl6wkev57yt7wwvevz0lh",
+  "fields": {
+    "session_data": ".eJxVjMsOwiAQRf-FtSFAeQwu3fsNZGBAqgaS0q6M_65NutDtPefcFwu4rTVsIy9hJnZmkp1-t4jpkdsO6I7t1nnqbV3myHeFH3Twa6f8vBzu30HFUb-1FtlMEL2USRVvnCA1JUcCgXzUElCB8zbH5FKxEIUho0l7lDBZpXNh7w_O8TeB:1plmET:A9KVP9EXhplsSZQR_p5peDWpVrP8uZj7G6C34LutOp8",
+    "expire_date": "2023-04-24T07:46:33.387Z"
+  }
+},
+{
+  "model": "tienda.marca",
+  "pk": 1,
+  "fields": {
+    "nombre": "zara"
+  }
+},
+{
+  "model": "tienda.marca",
+  "pk": 2,
+  "fields": {
+    "nombre": "mango"
+  }
+},
+{
+  "model": "tienda.producto",
+  "pk": 1,
+  "fields": {
+    "marca": 1,
+    "nombre": "camisa",
+    "unidades": 71,
+    "precio": "50.00",
+    "modelo": "formal",
+    "detalles": "camisa blanca"
+  }
+},
+{
+  "model": "tienda.producto",
+  "pk": 2,
+  "fields": {
+    "marca": 1,
+    "nombre": "pantalón",
+    "unidades": 100,
+    "precio": "30.00",
+    "modelo": "formal",
+    "detalles": "pantalón negro"
+  }
+},
+{
+  "model": "tienda.producto",
+  "pk": 3,
+  "fields": {
+    "marca": 2,
+    "nombre": "camisa",
+    "unidades": 95,
+    "precio": "50.00",
+    "modelo": "formal",
+    "detalles": "camisa verde"
+  }
+},
+{
+  "model": "tienda.compra",
+  "pk": 1,
+  "fields": {
+    "nombre": 1,
+    "unidades": 1,
+    "importe": "50.00",
+    "fecha": "2023-03-27T07:34:35.189Z",
+    "user": [
+      "admin"
+    ]
+  }
+},
+{
+  "model": "tienda.compra",
+  "pk": 2,
+  "fields": {
+    "nombre": 1,
+    "unidades": 3,
+    "importe": "150.00",
+    "fecha": "2023-03-27T07:34:35.189Z",
+    "user": [
+      "admin"
+    ]
+  }
+},
+{
+  "model": "tienda.compra",
+  "pk": 3,
+  "fields": {
+    "nombre": 1,
+    "unidades": 5,
+    "importe": "250.00",
+    "fecha": "2023-03-28T06:33:24.520Z",
+    "user": [
+      "admin"
+    ]
+  }
+},
+{
+  "model": "tienda.compra",
+  "pk": 4,
+  "fields": {
+    "nombre": 1,
+    "unidades": 1,
+    "importe": "50.00",
+    "fecha": "2023-03-28T06:33:24.520Z",
+    "user": [
+      "admin"
+    ]
+  }
+},
+{
+  "model": "tienda.compra",
+  "pk": 5,
+  "fields": {
+    "nombre": 1,
+    "unidades": 2,
+    "importe": "100.00",
+    "fecha": "2023-03-28T06:39:06.509Z",
+    "user": [
+      "admin"
+    ]
+  }
+},
+{
+  "model": "tienda.compra",
+  "pk": 6,
+  "fields": {
+    "nombre": 1,
+    "unidades": 2,
+    "importe": "100.00",
+    "fecha": "2023-03-28T06:41:10.235Z",
+    "user": [
+      "admin"
+    ]
+  }
+},
+{
+  "model": "tienda.compra",
+  "pk": 7,
+  "fields": {
+    "nombre": 3,
+    "unidades": 5,
+    "importe": "250.00",
+    "fecha": "2023-03-28T06:41:10.235Z",
+    "user": [
+      "admin"
+    ]
+  }
+},
+{
+  "model": "tienda.compra",
+  "pk": 8,
+  "fields": {
+    "nombre": 1,
+    "unidades": 5,
+    "importe": "250.00",
+    "fecha": "2023-03-28T06:45:49.960Z",
+    "user": [
+      "admin"
+    ]
+  }
+},
+{
+  "model": "tienda.compra",
+  "pk": 9,
+  "fields": {
+    "nombre": 2,
+    "unidades": 10,
+    "importe": "300.00",
+    "fecha": "2023-03-28T06:45:49.960Z",
+    "user": [
+      "admin"
+    ]
+  }
+},
+{
+  "model": "tienda.compra",
+  "pk": 10,
+  "fields": {
+    "nombre": 1,
+    "unidades": 5,
+    "importe": "250.00",
+    "fecha": "2023-03-28T07:13:28.368Z",
+    "user": [
+      "admin"
+    ]
+  }
+},
+{
+  "model": "tienda.compra",
+  "pk": 11,
+  "fields": {
+    "nombre": 2,
+    "unidades": 5,
+    "importe": "150.00",
+    "fecha": "2023-03-28T08:05:13.061Z",
+    "user": [
+      "rabha"
+    ]
+  }
+},
+{
+  "model": "tienda.compra",
+  "pk": 12,
+  "fields": {
+    "nombre": 2,
+    "unidades": 2,
+    "importe": "60.00",
+    "fecha": "2023-03-28T08:05:13.061Z",
+    "user": [
+      "rabha"
+    ]
+  }
+},
+{
+  "model": "tienda.compra",
+  "pk": 13,
+  "fields": {
+    "nombre": 1,
+    "unidades": 5,
+    "importe": "250.00",
+    "fecha": "2023-03-29T06:45:29.066Z",
+    "user": [
+      "rabha"
+    ]
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 1,
+  "fields": {
+    "action_time": "2023-03-27T07:35:13.227Z",
+    "user": [
+      "admin"
+    ],
+    "content_type": [
+      "tienda",
+      "marca"
+    ],
+    "object_id": "1",
+    "object_repr": "zara",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 2,
+  "fields": {
+    "action_time": "2023-03-27T07:35:20.792Z",
+    "user": [
+      "admin"
+    ],
+    "content_type": [
+      "tienda",
+      "marca"
+    ],
+    "object_id": "2",
+    "object_repr": "mango",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 3,
+  "fields": {
+    "action_time": "2023-03-27T07:36:04.051Z",
+    "user": [
+      "admin"
+    ],
+    "content_type": [
+      "tienda",
+      "producto"
+    ],
+    "object_id": "1",
+    "object_repr": "camisa zara formal",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 4,
+  "fields": {
+    "action_time": "2023-03-27T07:36:39.563Z",
+    "user": [
+      "admin"
+    ],
+    "content_type": [
+      "tienda",
+      "producto"
+    ],
+    "object_id": "2",
+    "object_repr": "pantalón zara formal",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 5,
+  "fields": {
+    "action_time": "2023-03-27T07:37:07.290Z",
+    "user": [
+      "admin"
+    ],
+    "content_type": [
+      "tienda",
+      "producto"
+    ],
+    "object_id": "3",
+    "object_repr": "camisa mango formal",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 6,
+  "fields": {
+    "action_time": "2023-03-28T08:14:50.359Z",
+    "user": [
+      "admin"
+    ],
+    "content_type": [
+      "auth",
+      "user"
+    ],
+    "object_id": "2",
+    "object_repr": "rabha",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 7,
+  "fields": {
+    "action_time": "2023-03-28T08:15:08.714Z",
+    "user": [
+      "admin"
+    ],
+    "content_type": [
+      "auth",
+      "user"
+    ],
+    "object_id": "2",
+    "object_repr": "rabha",
+    "action_flag": 2,
+    "change_message": "[]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 8,
+  "fields": {
+    "action_time": "2023-03-28T08:17:21.584Z",
+    "user": [
+      "admin"
+    ],
+    "content_type": [
+      "auth",
+      "user"
+    ],
+    "object_id": "2",
+    "object_repr": "rabha",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Staff status\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 9,
+  "fields": {
+    "action_time": "2023-04-10T07:51:28.593Z",
+    "user": [
+      "admin"
+    ],
+    "content_type": [
+      "auth",
+      "user"
+    ],
+    "object_id": "2",
+    "object_repr": "rabha",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"User permissions\"]}}]"
+  }
+}
+]
