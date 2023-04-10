@@ -1,6 +1,6 @@
 {% extends 'tienda/base.html' %}
 {% block content %}
-
+<!--productos mas vendidos  -->
 <form action="{% url 'top_10_productos_vendidos' %}">
     {% csrf_token %}
  <button type="submit">top_10_productos_vendidos</button>
@@ -28,7 +28,7 @@
       {% endfor %}
   </table>
 {% endif %}
-
+<!--feltrar por marca  -->
 <form method="post" action="{% url 'marca' %}">
     {% csrf_token %}
     {{ form.as_p }}
@@ -50,6 +50,7 @@
         {% endfor %}
     </table>
     {% endif %}
+    <!-- Compras de Usuario  -->
   <h1>Compras de Usuario</h1>
 <form method="post" action="{% url 'compras_usuario'%}">
     {% csrf_token %}
@@ -80,4 +81,23 @@
       </tbody>
     </table>
   {% endif %}
+    <!-- Compras de Usuario  -->
+<form action="{% url 'top_ten_clientes' %}">
+    {% csrf_token %}
+    <button type="submit">top_ten_clientes</button>
+</form>
+    {% if top_clientes %}
+    <table class="table">
+    <tr>
+        <th>usuario</th>
+        <th>Importe</th>
+    </tr>
+    {% for cliente in top_clientes %}
+        <tr>
+            <td>{{ cliente.user__username }}</td>
+            <td>{{ cliente.importe_total }}€</td>
+        </tr>
+    {% endfor %}
+    </table>
+{% endif %}
 {% endblock %}

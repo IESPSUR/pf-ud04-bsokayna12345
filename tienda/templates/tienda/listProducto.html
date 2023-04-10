@@ -7,19 +7,19 @@
             <th>Precio</th>
             <th>Unidades</th>
         </tr>
-        {% for dato in datos %}
+        {% for producto in productos %}
             <tr>
-                <td>{{ dato.nombre }}</td>
-                <td>{{ dato.marca }}</td>
-                <td>{{ dato.precio }}</td>
-                <td>{{ dato.unidades }}</td>
-                <td><a href="/" class="btn btn-info">Comprar</a></td>
-                <td><a href="{% url 'update' dato.id %}" class="btn btn-warning">Editar</a></td>
-                <td><a href="{% url 'delete' dato.id %}" class="btn btn-danger">Elimira</a></td>
+                <td>{{ producto.nombre }}</td>
+                <td>{{ producto.marca }}</td>
+                <td>{{ producto.precio }}</td>
+                <td>{{ producto.unidades }}</td>
+                <!--<td><a href="{% url 'checkout' producto.id %}" class="btn btn-info">Comprar</a></td>-->
+                <td><a href="{% url 'edicion' producto.id %}" class="btn btn-warning">Editar</a></td>
+                <td><a href="{% url 'eliminar' producto.id %}" class="btn btn-danger">Elimira</a></td>
 
             </tr>
 
         {% endfor %}
     </table>
-    <a href="{% url 'addProducto' %}" class="btn btn-success">Añadir</a>
+    <a href="{% url 'nuevo' %}" class="btn btn-success">Añadir</a>
 {% endblock %}

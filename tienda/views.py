@@ -4,7 +4,7 @@ from django.db import transaction
 from django.db.models import Sum
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
-from tienda.forms import FormProducto, FormCompra, FormCheckout, FormMarca, FormCompraUser
+from tienda.forms import FormProducto, FormCompra, FormCheckout, FormMarca, FormCompraUser, FormFilterProductoMarca
 from tienda.models import Producto, Compra, Marca
 
 
@@ -13,57 +13,59 @@ def welcome(request):
     return render(request, 'tienda/index.html', {})
 
 
-def listProducto(request):
+def listado(request):
     context = {}
     productos = Producto.objects.all()
-    context["datos"] = productos
+    context["productos"] = productos
     return render(request, "tienda/listProducto.html", context)
 
 
 @user_passes_test(lambda u: u.is_superuser)
-def add_producto(request):
+def nuevo(request):
     context = {}
     formulario = FormProducto(request.POST or None)
     if formulario.is_valid():
         formulario.save()
-        return redirect('listProducto')
+        return redirect('listado')
     context["form"] = formulario
     return render(request, "tienda/add_producto.html", context)
 
 
 @user_passes_test(lambda u: u.is_superuser)
-def delet_producto(request, id):
+def eliminar(request, id):
     producto = get_object_or_404(Producto, id=id)
     if request.method == "POST":
         producto.delete()
-        return redirect('listProducto')
+        return redirect('listado')
     return render(request, 'tienda/delete.html', {"productos": producto})
 
 
 @user_passes_test(lambda u: u.is_superuser)
-def update_producto(request, id):
+def edicion(request, id):
     context = {}
     producto = get_object_or_404(Producto, id=id)
     formulario = FormProducto(request.POST or None, instance=producto)
     if formulario.is_valid():
         formulario.save()
-        return redirect('listProducto')
+        return redirect('listado')
     context["form"] = formulario
     return render(request, "tienda/update_producto.html", context)
 
 
 def compra(request):
-    context = {}
-    if request.method == 'GET':
-        form = FormCompra(request.GET)
+    productos = Producto.objects.all()
+    if request.method == 'POST':
+        form = FormFilterProductoMarca(request.POST)
         if form.is_valid():
-            nombre_producto = form.cleaned_data['nombre']
-            productos = Producto.objects.filter(nombre__icontains=nombre_producto)
-            if productos:
-                context['productos'] = productos
+            nombre_producto = form.cleaned_data.get('nombre')
+            marca_seleccionada = form.cleaned_data.get('marca')
+            if nombre_producto:
+                productos = productos.filter(nombre__icontains=nombre_producto)
+            if marca_seleccionada:
+                productos = productos.filter(marca=marca_seleccionada)
     else:
-        form = FormCompra()
-    context['form'] = form
+        form = FormFilterProductoMarca()
+    context = {'form': form, 'productos': productos}
     return render(request, "tienda/compra_producto_buscado.html", context)
 
 
@@ -145,5 +147,11 @@ def compras_usuario(request):
         form = FormCompraUser()
     context = {'forms': form, 'compras_users': compra_user}
     return render(request, 'tienda/informes.html', context)
+def top_ten_clientes(request):
+    top_clientes = Compra.objects.values('user__username') \
+                       .annotate(importe_total=Sum('importe')) \
+                       .order_by('-importe_total') \
+                       .values('user__username', 'importe_total')[:10]
 
-
+    context = {'top_clientes': top_clientes}
+    return render(request, 'tienda/informes.html', context)

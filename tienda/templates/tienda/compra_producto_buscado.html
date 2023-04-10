@@ -1,22 +1,22 @@
 {% extends 'tienda/base.html' %}
 {% block content %}
-    <form method="get">
-    {{ form.as_p}}
-    <button type="submit">buscar</button>
+    <form method="post" action="{% url 'compra' %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="buscar">
     </form>
     {% if productos %}
     <table class="table">
         <th>Nombre</th>
-            <th>Marca</th>
-            <th>Precio</th>
-            <th>Unidades</th>
+        <th>Marca</th>
+        <th>Precio</th>
+        <th>Unidades</th>
         {% for producto in productos %}
           <tr>
             <td>{{ producto.nombre }}</td>
             <td>{{ producto.marca }}</td>
             <td>{{ producto.precio }}</td>
             <td>{{ producto.unidades }}</td>
-          <!-- <td> <a href="{% url 'checkout' producto.id  %}" class="btn btn-info"> Comprar </a> </td>-->
           <td>
               <form method="get" action="{% url 'checkout' producto.id %}">
                     <input type="number" name="unidades" value="1" min="1">
@@ -27,6 +27,7 @@
         {% endfor %}
     </table>
     {% else %}
-        <div>no existe este producto</div>
+        <div>No se encontraron productos con los filtros seleccionados.</div>
     {% endif %}
+
 {% endblock %}
