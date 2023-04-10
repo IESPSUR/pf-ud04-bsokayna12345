@@ -1,3 +1,4 @@
+from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib import messages
 from django.db import transaction
@@ -12,7 +13,7 @@ from tienda.models import Producto, Compra, Marca
 def welcome(request):
     return render(request, 'tienda/index.html', {})
 
-
+@staff_member_required(login_url='login')
 def listado(request):
     context = {}
     productos = Producto.objects.all()
@@ -20,7 +21,7 @@ def listado(request):
     return render(request, "tienda/listProducto.html", context)
 
 
-@user_passes_test(lambda u: u.is_superuser)
+@staff_member_required(login_url='login')
 def nuevo(request):
     context = {}
     formulario = FormProducto(request.POST or None)
@@ -40,7 +41,8 @@ def eliminar(request, id):
     return render(request, 'tienda/delete.html', {"productos": producto})
 
 
-@user_passes_test(lambda u: u.is_superuser)
+#@user_passes_test(lambda u: u.is_superuser)
+@staff_member_required(login_url='login')
 def edicion(request, id):
     context = {}
     producto = get_object_or_404(Producto, id=id)
@@ -104,7 +106,7 @@ def checkout(request, id):
     context = {'form': form, 'producto': producto, 'precio_total': precio_total, 'unidades': unidades}
     return render(request, 'tienda/checkout.html', context)
 
-
+@staff_member_required(login_url='login')
 def marca(request):
     productos = Producto.objects.all()
     if request.method == 'POST':
@@ -119,7 +121,7 @@ def marca(request):
     context = {'form': form, 'productos': productos}
     return render(request, 'tienda/informes.html', context)
 
-
+@staff_member_required(login_url='login')
 def top_10_productos_vendidos(request):
     context = {}
     if request.method == 'GET':
@@ -135,7 +137,7 @@ def top_10_productos_vendidos(request):
             print(productos_vendidos.values('total_unidades_vendidas'))
     return render(request, 'tienda/informes.html', context)
 
-
+@staff_member_required(login_url='login')
 def compras_usuario(request):
     compra_user = Compra.objects.all()
     if request.method == 'POST':
@@ -147,6 +149,7 @@ def compras_usuario(request):
         form = FormCompraUser()
     context = {'forms': form, 'compras_users': compra_user}
     return render(request, 'tienda/informes.html', context)
+@staff_member_required(login_url='login')
 def top_ten_clientes(request):
     top_clientes = Compra.objects.values('user__username') \
                        .annotate(importe_total=Sum('importe')) \
