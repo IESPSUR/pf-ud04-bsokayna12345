@@ -29,6 +29,7 @@
     {% csrf_token %}
     {{ form.unidades }}
     <input type="submit" value="Confirmar compra">
+    <a href="{% url 'compra' %}" class="btn btn-info">Cancel</a>
 </form>
 
 {% endblock %}

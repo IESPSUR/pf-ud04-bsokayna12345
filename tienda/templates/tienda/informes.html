@@ -50,31 +50,34 @@
         {% endfor %}
     </table>
     {% endif %}
-
-    <h1>Compras de {{ compras.0.user }}</h1>
-
-{% if compras %}
-<table class="table">
-  <thead>
-    <tr>
-      <th>Fecha</th>
-      <th>Producto</th>
-      <th>Unidades</th>
-      <th>Importe</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for compra in compras %}
-    <tr>
-      <td>{{ compra.fecha }}</td>
-      <td>{{ compra.nombre }}</td>
-      <td>{{ compra.unidades }}</td>
-      <td>{{ compra.importe }}</td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
-{% else %}
-<p>No se encontraron compras para este usuario.</p>
-{% endif %}
+  <h1>Compras de Usuario</h1>
+<form method="post" action="{% url 'compras_usuario'%}">
+    {% csrf_token %}
+    {{ forms.users }}
+<button type="submit">usuarios</button>
+</form>
+  {% if compras_users %}
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Producto</th>
+          <th>Unidades</th>
+          <th>Total</th>
+          <th>Fecha</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for compra in compras_users %}
+          <tr>
+            <td>{{ compra.user }}</td>
+            <td>{{ compra.producto.nombre }}</td>
+            <td>{{ compra.unidades }}</td>
+            <td>{{ compra.importe }}</td>
+            <td>{{ compra.fecha }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endif %}
 {% endblock %}
