@@ -27,7 +27,7 @@
 </table>
 <form method="post">
     {% csrf_token %}
-    {{ form.unidades }}
+    {{ form.unidades.hidden_widget }}
     <input type="submit" value="Confirmar compra">
     <a href="{% url 'compra' %}" class="btn btn-info">Cancel</a>
 </form>

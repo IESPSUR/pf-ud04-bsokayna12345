@@ -26,15 +26,7 @@ class Producto(models.Model):
     def __str__(self):
         return '{} {} {}'.format(self.nombre, self.marca, self.modelo)
 
-    def compra(self, unidades, user):
-        if unidades > self.unidades:
-            raise ValidationError('No hay suficientes unidades en el inventario')
-        importe = unidades * self.precio
-        self.unidades -= unidades
-        self.save()
-        Compra.objects.create(nombre=self, unidades=unidades, importe=importe, user=user)
-        search_vector = SearchVector('nombre', 'marca__nombre', 'modelo', 'detalles')
-        objects = models.Manager()
+
 
 
 
