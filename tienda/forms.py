@@ -1,7 +1,6 @@
 import itertools
 
 from django.contrib.auth.models import User
-from django.core.validators import MinValueValidator
 from django.forms import ModelForm
 from django import forms
 
@@ -9,6 +8,7 @@ from tienda.models import Producto, Compra, Marca
 
 
 class FormProducto(ModelForm):
+    unidades=forms.IntegerField(min_value=0)
     class Meta:
         model = Producto
         fields = '__all__'
@@ -23,8 +23,7 @@ class FormCompra(ModelForm):
 
 
 class FormCheckout(ModelForm):
-    unidades = forms.IntegerField(widget=forms.NumberInput(attrs={'readonly': 'readonly'}))
-
+    unidades = forms.IntegerField(widget=forms.HiddenInput)
     class Meta:
         model = Producto
         fields = ['unidades']
@@ -39,6 +38,7 @@ class FormMarca(forms.Form):
 
 class FormCompraUser(forms.Form):
     users = forms.ModelChoiceField(queryset=User.objects.all(), label='Seleccione un usuario')
+
 class FormFilterProductoMarca(forms.Form):
     nombre = forms.CharField(required=False)
     marca = forms.ModelChoiceField(queryset=Marca.objects.all(), empty_label='Selecciona una marca', required=False)

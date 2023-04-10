@@ -9,6 +9,7 @@ urlpatterns = [
     path('tienda/admin/edicion/<int:id>/', views.edicion, name='edicion'),
     path('tienda/compra/', views.compra, name='compra'),
     path('tienda/checkout/<int:id>', views.checkout, name='checkout'),
+    path('tienda/informes', views.informes, name='informes'),
     path('tienda/informes/marca', views.marca, name='marca'),
     path('tienda/informes/top_10_productos_vendidos/', views.top_10_productos_vendidos, name='top_10_productos_vendidos'),
     path('tienda/informes/compras_usuario/', views.compras_usuario, name='compras_usuario'),

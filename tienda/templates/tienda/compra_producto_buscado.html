@@ -18,9 +18,13 @@
             <td>{{ producto.precio }}</td>
             <td>{{ producto.unidades }}</td>
           <td>
-              <form method="get" action="{% url 'checkout' producto.id %}">
+             <!-- <form method="get" action="{% url 'checkout' producto.id %}">
 
                     <input type="number" name="unidades" value="1" min="1">
+                    <button type="submit" class="btn btn-info">comprar</button>
+              </form> -->
+              <form method="get" action="{% url 'checkout' producto.id %}">
+                    {{ formunidades.unidades }}
                     <button type="submit" class="btn btn-info">comprar</button>
               </form>
           </td>

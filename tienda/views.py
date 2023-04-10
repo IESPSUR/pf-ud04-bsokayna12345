@@ -56,6 +56,7 @@ def edicion(request, id):
 
 def compra(request):
     productos = Producto.objects.all()
+    formUnidades= FormProducto()
     if request.method == 'POST':
         form = FormFilterProductoMarca(request.POST)
         if form.is_valid():
@@ -67,7 +68,7 @@ def compra(request):
                 productos = productos.filter(marca=marca_seleccionada)
     else:
         form = FormFilterProductoMarca()
-    context = {'form': form, 'productos': productos}
+    context = {'form': form, 'productos': productos, 'formunidades':formUnidades}
     return render(request, "tienda/compra_producto_buscado.html", context)
 
 
@@ -105,8 +106,10 @@ def checkout(request, id):
 
     context = {'form': form, 'producto': producto, 'precio_total': precio_total, 'unidades': unidades}
     return render(request, 'tienda/checkout.html', context)
-
 @staff_member_required(login_url='login')
+def informes(request):
+
+    return render(request, 'tienda/informes.html',{})
 def marca(request):
     productos = Producto.objects.all()
     if request.method == 'POST':
@@ -119,25 +122,24 @@ def marca(request):
     else:
         form = FormMarca()
     context = {'form': form, 'productos': productos}
-    return render(request, 'tienda/informes.html', context)
+    return render(request, 'tienda/marca.html', context)
 
-@staff_member_required(login_url='login')
+
 def top_10_productos_vendidos(request):
     context = {}
-    if request.method == 'GET':
-        productos_vendidos = Compra.objects.values('nombre').annotate(total_unidades_vendidas=Sum('unidades')).order_by(
-            '-total_unidades_vendidas')[:10]
+    productos_vendidos = Compra.objects.values('nombre').annotate(total_unidades_vendidas=Sum('unidades')).order_by(
+        '-total_unidades_vendidas')[:10]
 
-        if productos_vendidos:
-            ids_productos_vendidos = [producto_vendido['nombre'] for producto_vendido in productos_vendidos]
-            top_productos = Producto.objects.filter(id__in=ids_productos_vendidos)
-            context = {'top_productos': top_productos, 'productos_vendidos': productos_vendidos}
-            print(ids_productos_vendidos)
-            print(top_productos)
-            print(productos_vendidos.values('total_unidades_vendidas'))
-    return render(request, 'tienda/informes.html', context)
+    if productos_vendidos:
+        ids_productos_vendidos = [producto_vendido['nombre'] for producto_vendido in productos_vendidos]
+        top_productos = Producto.objects.filter(id__in=ids_productos_vendidos)
+        context = {'top_productos': top_productos, 'productos_vendidos': productos_vendidos}
+        print(ids_productos_vendidos)
+        print(top_productos)
+        print(productos_vendidos.values('total_unidades_vendidas'))
+    return render(request, 'tienda/top_10_productos_vendidos.html', context)
 
-@staff_member_required(login_url='login')
+
 def compras_usuario(request):
     compra_user = Compra.objects.all()
     if request.method == 'POST':
@@ -148,8 +150,8 @@ def compras_usuario(request):
     else:
         form = FormCompraUser()
     context = {'forms': form, 'compras_users': compra_user}
-    return render(request, 'tienda/informes.html', context)
-@staff_member_required(login_url='login')
+    return render(request, 'tienda/compras_usuario.html', context)
+
 def top_ten_clientes(request):
     top_clientes = Compra.objects.values('user__username') \
                        .annotate(importe_total=Sum('importe')) \
@@ -157,4 +159,4 @@ def top_ten_clientes(request):
                        .values('user__username', 'importe_total')[:10]
 
     context = {'top_clientes': top_clientes}
-    return render(request, 'tienda/informes.html', context)
+    return render(request, 'tienda/top_ten_clientes.html', context)
