@@ -2,8 +2,7 @@
 {%  block content %}
       <!-- Compras de Usuario  -->
   <h1>Compras de Usuario</h1>
-<form method="post" action="{% url 'compras_usuario'%}">
-    {% csrf_token %}
+<form method="get" action="{% url 'compras_usuario'%}">
     {{ forms.users }}
 <button type="submit">usuarios</button>
 </form>

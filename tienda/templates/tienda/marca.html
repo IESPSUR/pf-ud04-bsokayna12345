@@ -1,7 +1,7 @@
 {% extends 'tienda/base.html' %}
 {% block content %}
     <!--feltrar por marca  -->
-<form method="post" action="{% url 'marca' %}">
+<form method="get" action="{% url 'marca' %}">
     {% csrf_token %}
     {{ form.as_p }}
       <button type="submit">Filtrar</button>

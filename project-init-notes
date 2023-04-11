@@ -1,4 +1,4 @@
-git clone url
+loadgit clone url
 cd project
 python3 -m venv venv
 source venv/bin/activate

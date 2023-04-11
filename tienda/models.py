@@ -1,8 +1,6 @@
 from datetime import datetime
 
 from django.conf import settings
-from django.contrib.postgres.search import SearchVector
-from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.db import models
 
@@ -16,7 +14,7 @@ class Marca(models.Model):
 
 
 class Producto(models.Model):
-    marca = models.ForeignKey('Marca', on_delete=models.CASCADE)
+    marca = models.ForeignKey(Marca, on_delete=models.CASCADE)
     nombre = models.CharField(max_length=30)
     unidades = models.IntegerField(validators=[MinValueValidator(0)])
     precio = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0.00)])
@@ -31,7 +29,7 @@ class Producto(models.Model):
 
 
 class Compra(models.Model):
-    nombre = models.ForeignKey('Producto', on_delete=models.RESTRICT)
+    nombre = models.ForeignKey(Producto, on_delete=models.RESTRICT)
     unidades = models.IntegerField(validators=[MinValueValidator(0)])
     importe = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0.00)])
     fecha = models.DateTimeField(default=datetime.now())

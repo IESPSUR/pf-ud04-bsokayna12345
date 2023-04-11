@@ -1,6 +1,6 @@
 {% extends 'tienda/base.html' %}
 {% block content %}
-    <form method="post" action="{% url 'compra' %}">
+    <form method="get" action="{% url 'compra' %}">
         {% csrf_token %}
         {{ form.as_p }}
         <input type="submit" value="buscar">

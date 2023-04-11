@@ -13,6 +13,7 @@ from tienda.models import Producto, Compra, Marca
 def welcome(request):
     return render(request, 'tienda/index.html', {})
 
+
 @staff_member_required(login_url='login')
 def listado(request):
     context = {}
@@ -41,7 +42,7 @@ def eliminar(request, id):
     return render(request, 'tienda/delete.html', {"productos": producto})
 
 
-#@user_passes_test(lambda u: u.is_superuser)
+# @user_passes_test(lambda u: u.is_superuser)
 @staff_member_required(login_url='login')
 def edicion(request, id):
     context = {}
@@ -56,9 +57,9 @@ def edicion(request, id):
 
 def compra(request):
     productos = Producto.objects.all()
-    formUnidades= FormProducto()
-    if request.method == 'POST':
-        form = FormFilterProductoMarca(request.POST)
+    formUnidades = FormProducto()
+    if request.method == 'GET':
+        form = FormFilterProductoMarca(request.GET)
         if form.is_valid():
             nombre_producto = form.cleaned_data.get('nombre')
             marca_seleccionada = form.cleaned_data.get('marca')
@@ -68,7 +69,7 @@ def compra(request):
                 productos = productos.filter(marca=marca_seleccionada)
     else:
         form = FormFilterProductoMarca()
-    context = {'form': form, 'productos': productos, 'formunidades':formUnidades}
+    context = {'form': form, 'productos': productos, 'formunidades': formUnidades}
     return render(request, "tienda/compra_producto_buscado.html", context)
 
 
@@ -106,14 +107,17 @@ def checkout(request, id):
 
     context = {'form': form, 'producto': producto, 'precio_total': precio_total, 'unidades': unidades}
     return render(request, 'tienda/checkout.html', context)
+
+
 @staff_member_required(login_url='login')
 def informes(request):
+    return render(request, 'tienda/informes.html', {})
 
-    return render(request, 'tienda/informes.html',{})
+
 def marca(request):
     productos = Producto.objects.all()
-    if request.method == 'POST':
-        form = FormMarca(request.POST)
+    if request.method == 'GET':
+        form = FormMarca(request.GET)
         if form.is_valid():
             marca_seleccionada = form.cleaned_data['marca']
             print(marca_seleccionada)
@@ -142,8 +146,8 @@ def top_10_productos_vendidos(request):
 
 def compras_usuario(request):
     compra_user = Compra.objects.all()
-    if request.method == 'POST':
-        form = FormCompraUser(request.POST)
+    if request.method == 'GET':
+        form = FormCompraUser(request.GET)
         if form.is_valid():
             user_seleccionado = form.cleaned_data['users']
             compra_user = Compra.objects.filter(user=user_seleccionado)
@@ -151,6 +155,7 @@ def compras_usuario(request):
         form = FormCompraUser()
     context = {'forms': form, 'compras_users': compra_user}
     return render(request, 'tienda/compras_usuario.html', context)
+
 
 def top_ten_clientes(request):
     top_clientes = Compra.objects.values('user__username') \
