@@ -9,17 +9,6 @@
     <link rel="stylesheet" href="{% static 'css/tienda.css' %}">
 </head>
 <body>
-<div class="page-header">
-		<h1><a href="/">Tienda Virtual</a></h1>
-    	</div>
-    	<div class="container-fluid">
-        	<div class="row">
-            		<div class="col">
-            			{% block content %}
-            			{% endblock %}
-            		</div>
-        	</div>
-    	</div>
  {% for message in messages %}
   {% if message.tags == 'error' %}
     <div class="alert alert-danger">
@@ -34,5 +23,17 @@
     </div>
   {% endif %}
 {% endfor %}
+<div class="page-header">
+		<h1><a href="/">Tienda Virtual</a></h1>
+    	</div>
+    	<div class="container-fluid">
+        	<div class="row">
+            		<div class="col">
+            			{% block content %}
+            			{% endblock %}
+            		</div>
+        	</div>
+    	</div>
+
 </body>
 </html>
