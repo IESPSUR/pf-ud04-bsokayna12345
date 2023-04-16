@@ -1,16 +1,11 @@
-from sqlite3 import IntegrityError
-from time import timezone
-
-from django.contrib.admin.views.decorators import staff_member_required
-from django.contrib.auth.decorators import user_passes_test
-from django.contrib.auth.decorators import login_required
-from django.contrib.postgres.search import SearchVector, SearchQuery
-from django.db import transaction
-from django.db.models import Sum
 from django.shortcuts import render, get_object_or_404, redirect
 
-from tienda.forms import FormProducto
-from tienda.models import Producto, Compra, Marca
+from .form import FormularioProducto
+from .Carrito import Carrito
+from .models import Producto
+from django.http import HttpResponse, HttpResponseRedirect
+from django.urls import reverse
+from django.template import loader
 
 
 # Create your views here.
@@ -18,157 +13,143 @@ def welcome(request):
     return render(request, 'tienda/index.html', {})
 
 
-def listProducto(request):
-    context = {}
-    productos = Producto.objects.all()
-    context["datos"] = productos
-    return render(request, "tienda/admin/listProducto.html", context)
-
-@staff_member_required
-def add_producto(request):
-    context = {}
-    formulario = FormProducto(request.POST or None)
-    if formulario.is_valid():
-        formulario.save()
-    context["form"] = formulario
-    return render(request, "tienda/admin/add_producto.html", context)
-
-
-@staff_member_required
-def delet_producto(request, id):
-    producto = get_object_or_404(Producto, id=id)
-    if request.method == "POST":
-        producto.delete()
-    return render(request, 'tienda/admin/delete.html', {"productos": producto})
-
-
-@staff_member_required
-def update_producto(request, id):
-    context = {}
-    producto = get_object_or_404(Producto, id=id)
-    formulario = FormProducto(request.POST or None, instance=producto)
-    if formulario.is_valid():
-        formulario.save()
-    context["form"] = formulario
-    return render(request, "tienda/admin/update_producto.html", context)
-
-
-def detalle_producto(request, id):
-    producto = get_object_or_404(Compra, id=id)
-    return render(request, 'tienda/detalle_producto.html', {'producto': producto})
-
-
-def compra(request):
-    productos = Producto.objects.all()
-    context = {'productos': productos}
-    return render(request, 'tienda/compra.html', context)
-
-
-def buscar(request):
-    # x = "articulo x es :%r " % request.GET["prd"]
-    # y = "articulo y es :%r" % request.GET["prd2"]
-    context = {}
-    mensaje = "No existe este producto"
-    if request.GET["prd"]:
-        nombre_producto = request.GET["prd"]
-        producto_encotrado = Producto.objects.filter(nombre__icontains=nombre_producto)
-        if producto_encotrado:
-            context['datos'] = producto_encotrado
-        else:
-            context = {"dato": mensaje}
-    else:
-        context['datos'] = Producto.objects.all()
-    return render(request, "tienda/compra_producto_buscado.html", context)
-
-
-@transaction.atomic()
-def checkout(request, id):
-    producto = get_object_or_404(Producto, id=id)
-    mensaje_error = ''
-    mensaje_confirmacion = ''
-
-    if request.method == 'POST':
-        unidades = int(request.POST['unidades'])
-        if unidades > producto.unidades:
-            mensaje_error = "No hay suficientes unidades disponibles para la compra"
-        else:
-            importe = unidades * producto.precio
-            compra = Compra(nombre=producto, unidades=unidades, importe=importe, user=request.user)
-            compra.save()
-            producto.unidades -= unidades
-            producto.save()
-            mensaje_confirmacion = "Compra realizada con éxito"
-    return render(request, 'tienda/comprar_producto.html',
-                  {'producto': producto, 'mensaje_error': mensaje_error, 'mensaje_confirmacion': mensaje_confirmacion})
-
-
-def informes(request):
-    return render(request, 'tienda/informes.html', {})
-
-
-def marcas(request):
-    marcas = Marca.objects.all()
-    return render(request, 'tienda/informe_marca.html', {'marcas': marcas})
-
-
-def producto_marca(requets, id):
-    productos = Producto.objects.filter(marca_id=id)
-    return render(requets, 'tienda/producto_marca.html', {'productos': productos})
-
-
-def top_10_productos_vendidos(request):
-
-    productos_vendidos = Compra.objects.values('nombre').annotate(total_unidades_vendidas=Sum('unidades')).order_by(
-        '-total_unidades_vendidas')[:1]
-    ids_productos_vendidos = [producto_vendido['nombre'] for producto_vendido in productos_vendidos]
-    top_productos = Producto.objects.filter(id__in=ids_productos_vendidos)
-    context = {'top_productos': top_productos, 'productos_vendidos': productos_vendidos}
-    print(productos_vendidos)
-    print(top_productos)
-    return render(request, 'tienda/productoMasVendido.html', context)
-
-
-def compras_usuario(request, id):
-    compras = Compra.objects.filter(user_id=id)
-    context = {'compras': compras}
-    return render(request, 'tienda/compras_usuario.html', context)
-
-
-@login_required
-def top_ten_clientes(request):
-    top_clientes = Compra.objects.values('user__username') \
-                       .annotate(importe_total=Sum('importe')) \
-                       .order_by('-importe_total') \
-                       .values('user__username', 'importe_total')[:10]
-
-    context = {'top_clientes': top_clientes}
-    return render(request, 'tienda/top_ten_clientes.html', context)
-
-
-from django.shortcuts import render
-from .models import Producto, Marca
-
-
-def filtrar_productos(request):
-    marcas = Marca.objects.all()
-    productos = Producto.objects.all()
-
-    marca_id = request.GET.get("marca")
-    nombre = request.GET.get('nombre', None)
-    print(marca_id)
-    print(nombre)
-
-    if marca_id:
-        productos = productos.filter(marca__id=marca_id)
-
-    if nombre:
-        productos = productos.filter(nombre__icontains=nombre)
-
+def gestionProducto(request):
+    # crear un objeto producto con todos valores del modelo Producto
+    producto = Producto.objects.all().values()
+    template = loader.get_template('tienda/getionProducto.html')
     context = {
-        'marcas': marcas,
-        'productos': productos,
-        'marca_id': marca_id,
-        'nombre': nombre,
+        'misProductos': producto,
     }
+    return HttpResponse(template.render(context, request))
 
-    return render(request, 'tienda/filtrar_productos.html', context)
+
+def addProducto(request):
+    template = loader.get_template('tienda/addProducto.html')
+    return HttpResponse(template.render({}, request))
+
+
+# def addrecord(request):
+#     ma = request.POST['marca']
+#     no = request.POST['nombre']
+#     mo = request.POST['modelo']
+#     uni = request.POST['unidades']
+#     p = request.POST['precio']
+#     d = request.POST['detalles']
+#
+#     productos = Producto(marca=ma, nombre=no, modelo=mo, unidades=uni, precio=p, detalles=d)
+#     productos.save()
+#     return HttpResponseRedirect(reverse('getionProducto'))
+
+def nuevo(request):
+    context = {}
+    form = FormularioProducto(request.POST or None)
+    if form.is_valid():
+        form.save()
+        context['form'] = form
+    return render(request, "tienda/addProducto.html", {'form':form})
+
+def delete_view(request, nombre):
+    # dictionary for initial data with
+    # field names as keys
+    #context = {}
+
+    # fetch the object related to passed id
+    producto = get_object_or_404(Producto, pk = nombre)
+
+    if request.method == "POST":
+        # delete object
+        producto.delete()
+        # after deleting redirect to
+        # home page
+        #return redirect('gestionProducto')
+    return render(request, "tienda/delete_view.html", {'producto' :producto})
+#https://www.geeksforgeeks.org/delete-view-function-based-views-django/?ref=rp
+def detail_producto(request, nombre):
+    # dictionary for initial data with
+    # field names as keys
+    producto = {}
+
+    # add the dictionary during initialization
+    producto["data"] = Producto.objects.get(pk=nombre)
+
+    return render(request, "tienda/detail_producto.html", producto)
+
+
+# update view for details
+def update_producto(request, nombre):
+    # dictionary for initial data with
+    # field names as keys
+    context = {}
+
+    # fetch the object related to passed id
+    producto = get_object_or_404(Producto, pk=nombre)
+
+    # pass the object as instance in form
+    form = FormularioProducto(request.POST or None, instance=producto)
+
+    # save the data from the form and
+    # redirect to detail_view
+    if form.is_valid():
+        form.save()
+        #return HttpResponseRedirect("getionProducto.html")
+
+    # add form dictionary to context
+    context["form"] = form
+
+    return render(request, "tienda/update_producto.html", context)
+def realizarCompra(request):
+    producto = Producto.objects.all().values()
+    template = loader.get_template('tienda/realizarCompra.html')
+    context = {
+        'misProductos': producto,
+    }
+    return HttpResponse(template.render(context, request))
+"""
+def compra(request, nombre):
+    # dictionary for initial data with
+    # field names as keys
+    producto = {}
+
+    # add the dictionary during initialization
+    producto["data"] = Producto.objects.get(pk=nombre)
+
+    return render(request, "tienda/compra.html", producto)
+
+def compra(request, nombre):
+    # dictionary for initial data with
+    # field names as keys
+    producto = {}
+
+    # add the dictionary during initialization
+    producto["data"] = Producto.objects.get(pk=nombre)
+
+    return render(request, "tienda/compra.html", producto)
+#https://www.youtube.com/watch?v=SlUQYrW6M9k
+
+#------
+
+def tienda (request):
+    productos = Producto.objects.all()
+    return render(request, "tienda/realizarCompra.html", {'productos': productos})
+"""
+def añadir_carrito(request, nombre):
+    carrito = Carrito(request)
+    producto = Producto.objects.get(pk=nombre)
+    carrito.agregar(producto)
+    #return redirect("compra.html")
+    return render(request, "tienda/compra.html")
+def eliminar_producto(request, producto_pk):
+    carrito= Carrito(request)
+    producto = Producto.objects.get(pk=producto_pk)
+    carrito.eliminar(producto)
+    return render(request, "tienda/compra.html")
+def restar(request, producto_pk):
+    carrito= Carrito(request)
+    producto = Producto.objects.get(pk=producto_pk)
+    carrito.restar(producto)
+    return redirect("tienda")
+def limpiar_carrito(request):
+    carrito = Carrito(request)
+    carrito.limpiar()
+    return render(request, "tienda/compra.html")
+#<!-- <td><a href="{% url 'compra' x.nombre %}">Comprar</a></td>-->

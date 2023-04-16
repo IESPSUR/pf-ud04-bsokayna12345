@@ -1,0 +1,35 @@
+<html>
+<head>
+    <title>
+
+    </title>
+</head>
+<body>
+    <h1>Getión de productos</h1>
+
+<table border="1">
+    <tr>
+      <td><strong>Marca</strong></td>
+      <td><strong>Nombre</strong></td>
+      <td><strong>Modelo</strong></td>
+        <td><strong>Unidades</strong></td>
+        <td><strong>Precio</strong></td>
+        <td><strong>Detalles</strong></td>
+    </tr>
+    {% for x in misProductos %}
+    <tr>
+    <td>{{ x.marca }}</td>
+    <td>{{ x.nombre }}</td>
+    <td>{{ x.modelo }}</td>
+    <td>{{ x.unidades }}</td>
+    <td>{{ x.precio }}</td>
+    <td>{{ x.detalles }}</td>
+    <td><a href="{%  url 'delete_view' x.nombre %}"> eleminar</a></td>
+    <td><a href="{%  url 'update_producto' x.nombre %}">Editar</a></td>
+
+    </tr>
+    {% endfor %}
+</table>
+<a href="{% url 'nuevo' %}">Añadir producto</a>
+</body>
+</html>
