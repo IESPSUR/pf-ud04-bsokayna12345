@@ -63,9 +63,7 @@ def compra(request):
     context = {'productos': productos}
     return render(request, 'tienda/compra.html', context)
 
-# unir los dos view compra y buscar
-# utilizar  los message de django framework
-#cambiar el nombre de las variables ["prd"]  ["dato"] [datos] por productos o articulos
+
 def buscar(request):
     # x = "articulo x es :%r " % request.GET["prd"]
     # y = "articulo y es :%r" % request.GET["prd2"]
@@ -82,7 +80,7 @@ def buscar(request):
         context['datos'] = Producto.objects.all()
     return render(request, "tienda/compra_producto_buscado.html", context)
 
-# comfirmar compra con un detalle de la compra que vas arializar
+
 @transaction.atomic()
 def checkout(request, id):
     producto = get_object_or_404(Producto, id=id)
