@@ -1,0 +1,28 @@
+{% extends 'tienda/base.html' %}
+{% block content %}
+    <!--feltrar por marca  -->
+<form method="get" action="{% url 'marca' %}">
+    {% csrf_token %}
+    {{ form.as_p }}
+      <button type="submit">Filtrar</button>
+</form>
+    {% if productos %}
+         <table class="table">
+        <th>Nombre</th>
+            <th>Marca</th>
+            <th>Precio</th>
+            <th>Unidades</th>
+        {% for producto in productos %}
+          <tr>
+            <td>{{ producto.nombre }}</td>
+            <td>{{ producto.marca }}</td>
+            <td>{{ producto.precio }}</td>
+            <td>{{ producto.unidades }}</td>
+          </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+        <div>No se encontraron productos con los filtros seleccionados.</div>
+    {% endif %}
+    <a href="{% url 'informes' %}" class="btn btn-info">Volver</a>
+{% endblock %}

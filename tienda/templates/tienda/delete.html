@@ -1,0 +1,12 @@
+{% extends 'tienda/base.html' %}
+ {% block content %}
+     <form method="POST">
+        {% csrf_token %}
+
+            ¿Quieres borrar este producto?<br>
+                {{ productos }} unidades<br>
+            <input type="submit" value="Yes">
+
+            <a href="{% url 'listado' %}" class="btn btn-info">Cancel</a>
+     </form>
+{% endblock %}

@@ -1,29 +1,39 @@
+from datetime import datetime
+
+from django.conf import settings
+from django.core.validators import MinValueValidator
 from django.db import models
 
+
 # Create your models here.
-<<<<<<< HEAD
 class Marca(models.Model):
-    nombre_marca = models.CharField(max_length=50, primary_key=True)
-    #
+    nombre = models.CharField(max_length=30, unique=True)
+
     def __str__(self):
-        return self.nombre_marca
+        return self.nombre
+
 
 class Producto(models.Model):
     marca = models.ForeignKey(Marca, on_delete=models.CASCADE)
-    nombre = models.CharField(max_length=20, primary_key=True)
-    modelo = models.IntegerField()
-    unidades = models.IntegerField()
-    precio = models.IntegerField()
-    detalles = models.CharField(max_length=100, blank=True)
+    nombre = models.CharField(max_length=30)
+    unidades = models.IntegerField(validators=[MinValueValidator(0)])
+    precio = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0.00)])
+    modelo = models.CharField(max_length=30)
+    detalles = models.TextField()
 
     def __str__(self):
-        return '{} {}'.format(self.nombre, self.marca)
+        return '{} {} {}'.format(self.nombre, self.marca, self.modelo)
+
+
+
+
 
 class Compra(models.Model):
-    nombre_producto = models.ForeignKey(Producto, on_delete=models.CASCADE)
-    #user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
-    importe = models.FloatField()
-    unidades = models.IntegerField()
-    fecha = models.DateField()
-=======
->>>>>>> parent of 8f2e377... models nuevos
+    nombre = models.ForeignKey(Producto, on_delete=models.RESTRICT)
+    unidades = models.IntegerField(validators=[MinValueValidator(0)])
+    importe = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0.00)])
+    fecha = models.DateTimeField(default=datetime.now())
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.RESTRICT)
+
+    def __str__(self):
+        return '{} {} {} {}'.format(self.nombre, self.importe, self.user, self.fecha)

@@ -1,0 +1,23 @@
+{% extends 'tienda/base.html' %}
+{% block content %}
+
+<!-- top ten clientes-->
+<h2>top 10 clientes</h2>
+    {% if top_clientes %}
+        <table class="table">
+            <tr>
+            <th>usuario</th>
+            <th>Importe</th>
+            </tr>
+                {% for cliente in top_clientes %}
+                    <tr>
+                        <td>{{ cliente.user__username }}</td>
+                        <td>{{ cliente.importe_total }}€</td>
+                    </tr>
+                {% endfor %}
+        </table>
+    {% else %}
+        <div>No existe ningun usuario</div>
+    {% endif %}
+    <a href="{% url 'informes' %}" class="btn btn-info">Volver</a>
+{% endblock %}

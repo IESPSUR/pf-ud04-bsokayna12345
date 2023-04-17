@@ -1,0 +1,35 @@
+{% extends 'tienda/base.html' %}
+
+{% block content %}
+<h1>Confirmar compra</h1>
+<p>Por favor revisa los detalles de la compra y confirma si estás de acuerdo.</p>
+<table>
+    <tr>
+        <td>Producto:</td>
+        <td>{{ producto.nombre }}</td>
+    </tr>
+    <tr>
+        <td>Marca:</td>
+        <td>{{ producto.marca }}</td>
+    </tr>
+    <tr>
+        <td>Precio unitario:</td>
+        <td>{{ producto.precio }}€</td>
+    </tr>
+     <tr>
+        <td>Unidades:</td>
+        <td>{{ unidades }}</td>
+    </tr>
+    <tr>
+        <td>Importe total:</td>
+        <td>{{ precio_total }}€</td>
+    </tr>
+</table>
+<form method="post">
+    {% csrf_token %}
+    {{ form.unidades }}
+    <input type="submit" value="Confirmar compra">
+    <a href="{% url 'compra' %}" class="btn btn-info">Cancel</a>
+</form>
+
+{% endblock %}

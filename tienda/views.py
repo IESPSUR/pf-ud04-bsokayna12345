@@ -1,11 +1,12 @@
+from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth.decorators import user_passes_test
+from django.contrib import messages
+from django.db import transaction
+from django.db.models import Sum
+from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
-
-from .form import FormularioProducto
-from .Carrito import Carrito
-from .models import Producto
-from django.http import HttpResponse, HttpResponseRedirect
-from django.urls import reverse
-from django.template import loader
+from tienda.forms import FormProducto, FormCompra, FormCheckout, FormMarca, FormCompraUser, FormFilterProductoMarca
+from tienda.models import Producto, Compra, Marca
 
 
 # Create your views here.
@@ -13,143 +14,154 @@ def welcome(request):
     return render(request, 'tienda/index.html', {})
 
 
-def gestionProducto(request):
-    # crear un objeto producto con todos valores del modelo Producto
-    producto = Producto.objects.all().values()
-    template = loader.get_template('tienda/getionProducto.html')
-    context = {
-        'misProductos': producto,
-    }
-    return HttpResponse(template.render(context, request))
+@staff_member_required(login_url='login')
+def listado(request):
+    context = {}
+    productos = Producto.objects.all()
+    context["productos"] = productos
+    return render(request, "tienda/listProducto.html", context)
 
 
-def addProducto(request):
-    template = loader.get_template('tienda/addProducto.html')
-    return HttpResponse(template.render({}, request))
-
-
-# def addrecord(request):
-#     ma = request.POST['marca']
-#     no = request.POST['nombre']
-#     mo = request.POST['modelo']
-#     uni = request.POST['unidades']
-#     p = request.POST['precio']
-#     d = request.POST['detalles']
-#
-#     productos = Producto(marca=ma, nombre=no, modelo=mo, unidades=uni, precio=p, detalles=d)
-#     productos.save()
-#     return HttpResponseRedirect(reverse('getionProducto'))
-
+@staff_member_required(login_url='login')
 def nuevo(request):
     context = {}
-    form = FormularioProducto(request.POST or None)
-    if form.is_valid():
-        form.save()
-        context['form'] = form
-    return render(request, "tienda/addProducto.html", {'form':form})
+    formulario = FormProducto(request.POST or None)
+    if formulario.is_valid():
+        formulario.save()
+        return redirect('listado')
+    context["form"] = formulario
+    return render(request, "tienda/add_producto.html", context)
 
-def delete_view(request, nombre):
-    # dictionary for initial data with
-    # field names as keys
-    #context = {}
 
-    # fetch the object related to passed id
-    producto = get_object_or_404(Producto, pk = nombre)
-
+@user_passes_test(lambda u: u.is_superuser)
+def eliminar(request, id):
+    producto = get_object_or_404(Producto, id=id)
     if request.method == "POST":
-        # delete object
         producto.delete()
-        # after deleting redirect to
-        # home page
-        #return redirect('gestionProducto')
-    return render(request, "tienda/delete_view.html", {'producto' :producto})
-#https://www.geeksforgeeks.org/delete-view-function-based-views-django/?ref=rp
-def detail_producto(request, nombre):
-    # dictionary for initial data with
-    # field names as keys
-    producto = {}
-
-    # add the dictionary during initialization
-    producto["data"] = Producto.objects.get(pk=nombre)
-
-    return render(request, "tienda/detail_producto.html", producto)
+        return redirect('listado')
+    return render(request, 'tienda/delete.html', {"productos": producto})
 
 
-# update view for details
-def update_producto(request, nombre):
-    # dictionary for initial data with
-    # field names as keys
+# @user_passes_test(lambda u: u.is_superuser)
+@staff_member_required(login_url='login')
+def edicion(request, id):
     context = {}
-
-    # fetch the object related to passed id
-    producto = get_object_or_404(Producto, pk=nombre)
-
-    # pass the object as instance in form
-    form = FormularioProducto(request.POST or None, instance=producto)
-
-    # save the data from the form and
-    # redirect to detail_view
-    if form.is_valid():
-        form.save()
-        #return HttpResponseRedirect("getionProducto.html")
-
-    # add form dictionary to context
-    context["form"] = form
-
+    producto = get_object_or_404(Producto, id=id)
+    formulario = FormProducto(request.POST or None, instance=producto)
+    if formulario.is_valid():
+        formulario.save()
+        return redirect('listado')
+    context["form"] = formulario
     return render(request, "tienda/update_producto.html", context)
-def realizarCompra(request):
-    producto = Producto.objects.all().values()
-    template = loader.get_template('tienda/realizarCompra.html')
-    context = {
-        'misProductos': producto,
-    }
-    return HttpResponse(template.render(context, request))
-"""
-def compra(request, nombre):
-    # dictionary for initial data with
-    # field names as keys
-    producto = {}
 
-    # add the dictionary during initialization
-    producto["data"] = Producto.objects.get(pk=nombre)
 
-    return render(request, "tienda/compra.html", producto)
-
-def compra(request, nombre):
-    # dictionary for initial data with
-    # field names as keys
-    producto = {}
-
-    # add the dictionary during initialization
-    producto["data"] = Producto.objects.get(pk=nombre)
-
-    return render(request, "tienda/compra.html", producto)
-#https://www.youtube.com/watch?v=SlUQYrW6M9k
-
-#------
-
-def tienda (request):
+def compra(request):
     productos = Producto.objects.all()
-    return render(request, "tienda/realizarCompra.html", {'productos': productos})
-"""
-def añadir_carrito(request, nombre):
-    carrito = Carrito(request)
-    producto = Producto.objects.get(pk=nombre)
-    carrito.agregar(producto)
-    #return redirect("compra.html")
-    return render(request, "tienda/compra.html")
-def eliminar_producto(request, producto_pk):
-    carrito= Carrito(request)
-    producto = Producto.objects.get(pk=producto_pk)
-    carrito.eliminar(producto)
-    return render(request, "tienda/compra.html")
-def restar(request, producto_pk):
-    carrito= Carrito(request)
-    producto = Producto.objects.get(pk=producto_pk)
-    carrito.restar(producto)
-    return redirect("tienda")
-def limpiar_carrito(request):
-    carrito = Carrito(request)
-    carrito.limpiar()
-    return render(request, "tienda/compra.html")
-#<!-- <td><a href="{% url 'compra' x.nombre %}">Comprar</a></td>-->
+    formUnidades = FormProducto()
+    if request.method == 'GET':
+        form = FormFilterProductoMarca(request.GET)
+        if form.is_valid():
+            nombre_producto = form.cleaned_data.get('nombre')
+            marca_seleccionada = form.cleaned_data.get('marca')
+            if nombre_producto:
+                productos = productos.filter(nombre__icontains=nombre_producto)
+            if marca_seleccionada:
+                productos = productos.filter(marca=marca_seleccionada)
+    else:
+        form = FormFilterProductoMarca()
+    context = {'form': form, 'productos': productos, 'formunidades': formUnidades}
+    return render(request, "tienda/compra_producto_buscado.html", context)
+
+
+@transaction.atomic()
+def checkout(request, id):
+    producto = get_object_or_404(Producto, id=id)
+    precio_total = 0
+    unidades = 0
+    if request.method == 'GET':
+        unidades = int(request.GET.get('unidades'))
+        precio_total = producto.precio * unidades
+        print(precio_total)
+        form = FormCheckout({'unidades': unidades})
+        if unidades > producto.unidades:
+            messages.error(request, "No existen unidades suficientes")
+
+    elif request.method == 'POST':
+        form = FormCheckout(request.POST)
+        if form.is_valid():
+            unidades = form.cleaned_data['unidades']
+            print(unidades)
+            if unidades <= producto.unidades:
+                importe = unidades * producto.precio
+                compra = Compra(nombre=producto, unidades=unidades, importe=importe, user=request.user)
+                compra.save()
+                producto.unidades -= unidades
+                producto.save()
+                messages.success(request, "compra realizada en exito")
+                return redirect('compra')
+            else:
+                messages.error(request, "No existen unidades suficientes")
+                return redirect('compra')
+    else:
+        form = FormCheckout()
+
+    context = {'form': form, 'producto': producto, 'precio_total': precio_total, 'unidades': unidades}
+    return render(request, 'tienda/checkout.html', context)
+
+
+@staff_member_required(login_url='login')
+def informes(request):
+    return render(request, 'tienda/informes.html', {})
+
+
+def marca(request):
+    productos = Producto.objects.all()
+    if request.method == 'GET':
+        form = FormMarca(request.GET)
+        if form.is_valid():
+            marca_seleccionada = form.cleaned_data['marca']
+            print(marca_seleccionada)
+            productos = Producto.objects.filter(marca__nombre__icontains=marca_seleccionada)
+            print(productos)
+    else:
+        form = FormMarca()
+    context = {'form': form, 'productos': productos}
+    return render(request, 'tienda/marca.html', context)
+
+
+def top_10_productos_vendidos(request):
+    context = {}
+    productos_vendidos = Compra.objects.values('nombre').annotate(total_unidades_vendidas=Sum('unidades')).order_by(
+        '-total_unidades_vendidas')[:10]
+
+    if productos_vendidos:
+        ids_productos_vendidos = [producto_vendido['nombre'] for producto_vendido in productos_vendidos]
+        top_productos = Producto.objects.filter(id__in=ids_productos_vendidos)
+        context = {'top_productos': top_productos, 'productos_vendidos': productos_vendidos}
+        print(ids_productos_vendidos)
+        print(top_productos)
+        print(productos_vendidos.values('total_unidades_vendidas'))
+    return render(request, 'tienda/top_10_productos_vendidos.html', context)
+
+
+def compras_usuario(request):
+    compra_user = Compra.objects.all()
+    if request.method == 'GET':
+        form = FormCompraUser(request.GET)
+        if form.is_valid():
+            user_seleccionado = form.cleaned_data['users']
+            compra_user = Compra.objects.filter(user=user_seleccionado)
+    else:
+        form = FormCompraUser()
+    context = {'forms': form, 'compras_users': compra_user}
+    return render(request, 'tienda/compras_usuario.html', context)
+
+
+def top_ten_clientes(request):
+    top_clientes = Compra.objects.values('user__username') \
+                       .annotate(importe_total=Sum('importe')) \
+                       .order_by('-importe_total') \
+                       .values('user__username', 'importe_total')[:10]
+
+    context = {'top_clientes': top_clientes}
+    return render(request, 'tienda/top_ten_clientes.html', context)

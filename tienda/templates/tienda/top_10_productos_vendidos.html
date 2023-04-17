@@ -1,0 +1,30 @@
+{% extends 'tienda/base.html' %}
+{% block content %}
+    <!--productos mas vendidos  -->
+{%  if top_productos %}
+    <h1>Top 10 Productos Vendidos</h1>
+  <table class="table">
+      <tr>
+        <th>Posición</th>
+        <th>Nombre del Producto</th>
+        <th>Unidades Vendidas</th>
+      </tr>
+      {% for producto in top_productos %}
+        <tr>
+          <td>{{ forloop.counter }}</td>
+          <td>{{ producto.nombre }}</td>
+          <td>
+            {% for producto_vendido in productos_vendidos %}
+              {% if producto_vendido.nombre == producto.id %}
+                {{ producto_vendido.total_unidades_vendidas }}
+              {% endif %}
+            {% endfor %}
+          </td>
+        </tr>
+      {% endfor %}
+  </table>
+{% else %}
+        <div>No existen productos vendidos </div>
+{% endif %}
+    <a href="{% url 'informes' %}" class="btn btn-info">Volver</a>
+{% endblock %}

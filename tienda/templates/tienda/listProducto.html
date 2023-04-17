@@ -1,0 +1,25 @@
+{% extends 'tienda/base.html' %}
+{% block content %}
+    <table class="table">
+        <tr>
+            <th>Nombre</th>
+            <th>Marca</th>
+            <th>Precio</th>
+            <th>Unidades</th>
+        </tr>
+        {% for producto in productos %}
+            <tr>
+                <td>{{ producto.nombre }}</td>
+                <td>{{ producto.marca }}</td>
+                <td>{{ producto.precio }}</td>
+                <td>{{ producto.unidades }}</td>
+                <!--<td><a href="{% url 'checkout' producto.id %}" class="btn btn-info">Comprar</a></td>-->
+                <td><a href="{% url 'edicion' producto.id %}" class="btn btn-warning">Editar</a></td>
+                <td><a href="{% url 'eliminar' producto.id %}" class="btn btn-danger">Elimira</a></td>
+
+            </tr>
+
+        {% endfor %}
+    </table>
+    <a href="{% url 'nuevo' %}" class="btn btn-success">Añadir</a>
+{% endblock %}

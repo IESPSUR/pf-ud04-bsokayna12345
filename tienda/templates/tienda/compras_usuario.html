@@ -1,0 +1,37 @@
+{% extends 'tienda/base.html' %}
+{%  block content %}
+      <!-- Compras de Usuario  -->
+  <h1>Compras de Usuario</h1>
+<form method="get" action="{% url 'compras_usuario'%}">
+    {{ forms.users }}
+<button type="submit">usuarios</button>
+</form>
+  {% if compras_users %}
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Producto</th>
+          <th>Unidades</th>
+          <th>Total</th>
+          <th>Fecha</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for compra in compras_users %}
+          <tr>
+            <td>{{ compra.user }}</td>
+            <td>{{ compra.nombre.nombre }}</td>
+            <td>{{ compra.unidades }}</td>
+            <td>{{ compra.importe }}</td>
+            <td>{{ compra.fecha }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+        <div>No existen compras realizada</div>
+  {% endif %}
+    <a href="{% url 'informes' %}" class="btn btn-info">Volver</a>
+
+{%  endblock %}
